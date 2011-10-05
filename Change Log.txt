@@ -1,0 +1,11 @@
+/**
+* Channel Data
+* Author: Justin Kimbrell (SaucePan Creative)
+* Build: 0.1.0 - 20111007
+* Copyright 2011 - All rights reserved
+* http://objectivehtml.com
+*/
+
+Version 0.1.0 - 10/07/2011
+--------------------------
+Initial beta release. Here goes nothing...
