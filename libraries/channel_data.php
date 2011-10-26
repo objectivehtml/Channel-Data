@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Channel Data
+ * Channel Data Class
  *
  * Channel Data is a convenience class designed to easily retrieve
  * channel data from plugins. By using this one class, you don't 
@@ -10,10 +10,10 @@
  * @package		ExpressionEngine
  * @category	Library
  * @author		Justin Kimbrell
- * @copyright	Copyright (c) 2011, Justin Kimbrell
- * @link 		http://www.objectivehtml.com
+ * @copyright	Copyright (c) 2011, SaucePan Creative
+ * @link 		http://www.inthesaucepan.com
  * @version		2.0 
- * @build		20111025
+ * @build		20110922
  */
  
 class Channel_data {
@@ -464,13 +464,11 @@ class Channel_data {
 	 * @return	object
 	 */
 	
-	public function get_entry($entry_id, $select = array('*'))
+	public function get_entry($entry_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'))
 	{
-		$entry = $this->get_channel_title($entry_id);
-		
-		var_dump($entry);exit();
-		
-		return $this->get_entries($channel_id, $select, FALSE, array('entry_id' => $entry_id), 1);
+		$entry = $this->get_channel_title($entry_id)->row();
+				
+		return $this->get_entries($entry->channel_id, $select, array('channel_data.entry_id' => $entry_id));
 	}
 	
 	/**
