@@ -19,7 +19,7 @@ class Entries_model extends Channel_entries_model {
 	 * @return	string
 	 */
 	
-	function get_entries($channel_id, $additional_fields = array(), $additional_where = array(), $limit = FALSE, $order_by = 'entry_id', $sort = 'DESC')
+	function get_entries($channel_id, $additional_fields = array(), $additional_where = array(), $limit = FALSE, $order_by = 'channel_data.entry_id', $sort = 'DESC')
 	{
 		if ( ! is_array($additional_fields))
 		{
