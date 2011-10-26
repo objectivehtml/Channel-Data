@@ -68,7 +68,7 @@ The returned object would look something like, or an active record object...
 	
 ### Documentation
 
-+	#### get_entry($channel_id, $entry_id, $select = array('*'))
++	get_entry($channel_id, $entry_id, $select = array('*'))
 	
 	Gets channel entries with easy filtering and using polymorphic parameters.
 		
@@ -77,7 +77,7 @@ The returned object would look something like, or an active record object...
 		$this->EE->channel_data->get_entry(1);
 			
 	
-+	#### get_entries($channel_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
++	get_entries($channel_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 	
 	Gets the channel entries using the standard polymorphic parameters. If you don't specify any additional parameters, the default will be used.
 	
