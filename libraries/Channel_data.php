@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Channel Data Class
+ * Channel Data
  *
  * Channel Data is a convenience class designed to easily retrieve
  * channel data from plugins. By using this one class, you don't 
@@ -10,10 +10,10 @@
  * @package		ExpressionEngine
  * @category	Library
  * @author		Justin Kimbrell
- * @copyright	Copyright (c) 2011, SaucePan Creative
- * @link 		http://www.inthesaucepan.com
- * @version		1.0 
- * @build		20110922
+ * @copyright	Copyright (c) 2011, Justin Kimbrell
+ * @link 		http://www.objectivehtml.com
+ * @version		2.0 
+ * @build		20111025
  */
  
 class Channel_data {
@@ -21,351 +21,640 @@ class Channel_data {
 	public function __construct()
 	{
 		$this->EE =& get_instance();
-		
-		$this->EE->load->model('category_model');
-		$this->EE->load->model('channel_model');
-		$this->EE->load->model('channel_entries_model');
-		$this->EE->load->model('field_model');
-		$this->EE->load->model('entries_model');
-		$this->EE->load->model('status_model');
 	}
-		
+	
 	/**
-	 * Get Channel Info
-	 *
-	 * Gets info for a single channel
+	 * Get a single category by passing a category id. 
 	 *
 	 * @access	public
-	 * @param	mixed	A channel id
-	 * @param	array 	An array of fields to select in the query
+	 * @param	int
+	 * @param	mixed
 	 * @return	string
 	 */
 	
-	public function get_channel_info($channel_id, $select = array())
+	public function get_category($category_id, $select = array('*'))
 	{
-		return $this->EE->channel_model->get_channel_info($channel_id, $select);
+		return $this->get_categories($select, array('category_id' => $category_id));
 	}
 	
+	/**
+	 * Get categories using on a series of polymorphic parameters that
+	 * returns an active record object.
+	 * 
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_categories($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{			
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+		
+		return $this->EE->db->get('categories');
+	}
+	
+	/**
+	 * Get category field by passing a field id.
+	 *
+	 * @access	public
+	 * @param	int
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_category_field($field_id, $select = array('*'))
+	{
+		return $this->get_category_fields($select, array('field_id' => $field_id));
+	}
+	
+	/**
+	 * Get category fields using on a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_category_fields($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{			
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+		
+		return $this->EE->db->get('category_fields');
+	}
+	
+	/**
+	 * Get category field data using on a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_category_field_data($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{			
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+		
+		return $this->EE->db->get('category_field_data');
+	
+	}
+	
+	/**
+	 * Get category groups using on a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	 
+	public function get_category_group($group_id, $select = array('*'))
+	{
+		return $this->EE->db->get($select, array('group_id' => $group_id));
+	}
+	
+	/**
+	 * Get category groups by using on a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_category_groups($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{			
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+		
+		return $this->EE->db->get('category_groups');
+	
+	}
+	
+	/**
+	 * Get the category posts by an entry id.
+	 *
+	 * @access	public
+	 * @param	int
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_category_post($entry_id, $select = array('*'))
+	{
+		return $this->get_category_posts($select, array('entry_id' => $entry_id));
+	}
+	
+	/**
+	 * Get the category posts using a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_category_posts($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{			
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+		
+		return $this->EE->db->get('category_posts');
+	}
+	
+	/**
+	 * Gets a channel by passing a channel_id
+	 *
+	 * @access	public
+	 * @param	int
+	 * @param	mixed
+	 * @return	object
+	 */
+	 
 	public function get_channel($channel_id, $select = array('*'))
 	{
-		return $this->get_channel_info($channel_id, $select);
+		return $this->get_channels($select, array('channel_id' => $channel_id));
 	}
 	
 	/**
-	 * Get Channels
-	 *
-	 * Gets the channels
-	 *
+	 * Get channel fields using a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
 	 * @access	public
-	 * @param	array	An array of fields to select in the query
-	 * @param 	array	An associative array to build the where conditional
-	 * @param	mixed	A site id
-	 * @return	string
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
 	 */
 	
-	public function get_channels($select = array(), $where = array(), $site_id = NULL)
-	{
-		return $this->EE->channel_model->get_channels($site_id, $select, array($where));
+	public function get_channels($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{			
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+		
+		return $this->EE->db->get('channels');
 	}
 	
-	
 	/**
-	 * Get Channel Fields
-	 *
-	 * Get the channel fields.
-	 *
+	 * Get custom field from a specified field_id.
+	 * 
 	 * @access	public
-	 * @param	mixed	Field group can be an int or string
-	 * @param	array	An array of fields to select in the query
-	 * @return	string
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
 	 */
-	
-	public function get_channel_fields($field_group, $select = array())
+	 
+	public function get_channel_field($field_id, $select = array('*'))
 	{
-		return $this->EE->channel_model->get_channel_fields($field_group, $select);
+		return $this->get_channel_fields($select, array('field_id' => $field_id));
 	}
 	
-	
 	/**
-	 * Get Entries
-	 *
-	 * Gets channel entries with easy filtering. This function is
-	 * different than the native functionality in that is gets the fields
-	 * names and  
-	 *
+	 * Get custom fields using on a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
 	 * @access	public
-	 * @param	mixed	An array of fields to select in the query
-	 * @param	array	An associative array to build the where conditional
-	 * @return	string
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
 	 */
-	
-	public function get_entries($channel_id, $select = array(), $where = array())
+	 
+	public function get_channel_fields($select = array('*'), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 	{
-		$channel = $this->get_channel_info($channel_id);
-		
-		if(!$channel) return FALSE;
-		
-		$channel = $channel->row();
-		$fields	 = $this->get_fields($channel->field_group)->result();
-				
-		foreach($fields as $field)
-		{
-			$select[] = 'field_id_'.$field->field_id.' as \''.$field->field_name.'\'';
-			
-			foreach($where as $index => $value)
-			{
-				if($field->field_name == $index)
-				{
-					unset($where[$index]);
-					$where['field_id_'.$field->field_id] = $value;
-				}
-			}			
-		}
-				
-		return $this->EE->entries_model->get_entries($channel->channel_id, $select, $where);
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+		return $this->EE->db->get('channel_fields');
 	}
 	
-	
 	/**
-	 * Get Entry
-	 *
-	 * Gets a single entry from an entry id. 
-	 *
+	 * Get a custom field using on a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
 	 * @access	public
-	 * @param	mixed	The entry id could be a string or integer
-	 * @param	array	An array of fields to select in the query
-	 * @return	string
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
 	 */
 	
-	public function get_entry($entry_id, $select = array())
+	public function get_custom_field($field_id, $select = array('*'))
 	{
-		$entry		= $this->get_entry_by_id($entry_id);
-		
-		if($entry->num_rows == 0)
-			return FALSE;
-		
-		$entry		= $entry->row();
-		
-		$channel_id	= $entry->channel_id;
-		$where		= array('channel_data.entry_id'	=> $entry_id);
-		
-		return $this->get_entries($channel_id, $select, $where);
+		return $this->get_channel_field($field_id, $select);
 	}
 	
+	/**
+	 * Get custom fields using on a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_custom_fields($select = array('*'), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{
+		return $this->get_channel_fields($select, $where, $order_by, $sort, $limit, $offset);
+	}
 	
 	/**
-	 * Get Entry By Id
-	 *
-	 * Gets the entry from a give id.
+	 * An alias to get_channel_fields and get_custom_fields.
 	 *
 	 * @access	public
-	 * @param	int		A valid entry id
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_fields($select = array('*'), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{
+		return $this->get_channel_fields($select, $where, $order_by, $sort, $limit, $offset);
+	}
+	
+	/**
+	 * An alias to get_channel_field and get_custom_field.
+	 *
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	 
+	public function get_field($field_id, $select = array('*'))
+	{
+		return $this->get_channel_field($field_id, $select);
+	}
+ 
+	/**
+	 * Plugin Name
+	 *
+	 * Plugin description
+	 *
+	 * @access	public
 	 * @return	string
 	 */
 	
-	public function get_entry_by_id($entry_id)
+	public function get_fields_by_group($group_id, $select = array('*'))
 	{
-		if (!$entry_id)
-		{
-			return FALSE;
-		}
+		return $this->get_channel_fields($select, array('group_id' => $group_id));
+	}	  
+		  
+	
+	/**
+	 * Get channel member groups by either a group_id or channel_id
+	 *
+	 * @access	public
+	 * @param	int
+	 * @param	int
+	 * @return	string
+	 */
+	
+	public function get_channel_member_group($group_id = FALSE, $channel_id = FALSE)
+	{
+		$params = array();
 		
-		$this->EE->db->select('*');
-		$this->EE->db->where('channel_titles.entry_id', $entry_id);
+		if($group_id !== FALSE)
+			$params['where']['group_id'] = $group_id;
+		
+		if($channel_id !== FALSE)
+			$params['where']['channel_id'] = $channel_id;
+		
+		$this->convert_params($params);
+		
+		return $this->EE->db->get('channel_member_groups');
+	}
+	
+	/**
+	 * Get the channel member group using on a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_channel_member_groups($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{			
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+		
+		
+		return $this->EE->db->get('channel_member_groups');
+	}
+	
+	/**
+	 * Get channel title using an entry id
+	 *
+	 * @access	public
+	 * @param	int
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_channel_title($entry_id, $select = array('*'))
+	{
+		return $this->get_channel_titles($select, array('entry_id' => $entry_id));
+	}
+	
+	/**
+	 * Get channel titles using on a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_channel_titles($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{			
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
 		
 		return $this->EE->db->get('channel_titles');
 	}
 	
 	/**
-	 * Get Entry Categories
-	 *
-	 * Gets all the categories associated with a given entry
+	 * Get channel data using on a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_channel_data($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{			
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+				
+		return $this->EE->db->get('channel_data');
+	}
+	
+	/**
+	 * Get a single entry passing an entry id
 	 *
 	 * @access	public
 	 * @param	int
-	 * @return	string
-	 */
-	 
-	 public function get_entry_categories($entry_id)
-	 {
-	 	$this->EE->db->where('entry_id', $entry_id);
-	 	
-	 	return $this->EE->db->get('category_posts');
-	 }
-	
-	/**
-	 * Get Fields
-	 *
-	 * Gets the field associated to the group
-	 *
-	 * @access	public
-	 * @param	mixed	A field group id
-	 * @param	array	An associative array to build the where conditional
-	 * @return	string
+	 * @param	mixed
+	 * @return	object
 	 */
 	
-	public function get_fields($group_id = '', $where = array())
+	public function get_entry($entry_id, $select = array('*'))
 	{
-		return $this->EE->field_model->get_fields($group_id, $where);	
+		$entry = $this->get_channel_title($entry_id);
+		
+		var_dump($entry);exit();
+		
+		return $this->get_entries($channel_id, $select, FALSE, array('entry_id' => $entry_id), 1);
 	}
 	
-	
 	/**
-	 * Get Field Groups
-	 *
-	 * Gets the field groups
+	 * Get entries by specifying a channel id. Polymorphic paramerts are
+	 * also accepted. The channel id is required.
 	 *
 	 * @access	public
-	 * @param	mixed	An array of fields to select in the query
-	 * @param	array	An associative array to build the where conditional
 	 * @return	string
 	 */
-	
-	public function get_field_groups($select = FALSE, $where = array())
-	{
-		if($select) $this->EE->db->select($select);
 		
-		foreach($where as $row)
+	public function get_entries($channel_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{		
+		if($channel_id !== FALSE)
 		{
-			if(is_array($row))
-				$this->EE->db->where_in($row);
-			else
-				$this->EE->db->where($row);
+			$channel = $this->get_channel($channel_id)->row();
+			$fields	 = $this->get_channel_fields('*', array('group_id' => $channel->field_group))->result();
+					
+			foreach($fields as $field)
+			{
+				$select[] = 'field_id_'.$field->field_id.' as \''.$field->field_name.'\'';
+				
+				foreach($where as $index => $value)
+				{
+					if($field->field_name == $index)
+					{
+						unset($where[$index]);
+						$where['field_id_'.$field->field_id] = $value;
+					}
+				}			
+			}
+			
+			$this->EE->db->where($where);			
+			$this->EE->db->join('channel_data', 'channel_titles.entry_id = channel_data.entry_id');
 		}
 		
-		return $this->EE->field_model->get_field_groups();
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+		
+		return $this->EE->db->get('channel_titles');		
 	}
 	
 	/**
-	 * Get Statuses
+	 * Get a single relationship by passing an relationship id
 	 *
 	 * @access	public
 	 * @param	int
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_relationship($rel_id, $select = array('*'))
+	{
+		return $this->get_relationships($select, array('rel_id' => $rel_id));
+	}
+	
+	/**
+	 * Get relationships by using on a series of polymorphic parameters 
+	 * that returns an active record object.
+	 * 
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @return	object
+	 */
+	
+	public function get_relationships($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	{			
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+		
+		return $this->EE->db->get('relationships');
+	}	
+	
+	/**
+	 * Convert Params
+	 * 
+	 * Converts polymorphic parameters into an array that is used to
+	 * build the active record sequence.
+	 *
+	 * Example: 
+	 *
+	 * 	$this->convert_params(array(
+	 * 		'select' 	=> array('channel_id', 'channel_name'),
+	 *		'where'	 	=> array('channel_id' => 1),
+	 *		'order_by'	=> 'channel_id'
+	 * 	));
+	 *
+	 * 	$this->convert_params(array(
+	 * 		'select' 	=> '*',
+	 *		'order_by'	=> array('channel_description', 'channel_name'),
+	 *		'sort'		=> 'ASC'
+	 * 	));
+	 *
+	 * $this->convert_params(array('*'), array('channel_id' => 1), 'channel_id', 'DESC', 1, 1);
+	 *
+	 * There are number of combinations possible that aren't even shown.
+	 *
+	 * @access	public
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
+	 * @param	mixed
 	 * @return	array
 	 */
-	function get_statuses($group_id = '', $channel_id = '')
+	 
+	public function convert_params($select, $where, $order_by, $sort, $limit, $offset)
 	{
-		return $this->EE->status_model->get_statuses($group_id, $channel_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Status
-	 *
-	 * @access	public
-	 * @param	int
-	 * @return	array
-	 */
-	function get_status($status_id = '')
-	{
-		return $this->EE->status_model->get_status($status_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get next Status Order
-	 *
-	 * @access	public
-	 * @param	int
-	 * @return	mixed
-	 */
-	function get_next_status_order($group_id = '')
-	{
-		return $this->EE->status_model->get_next_status_order($group_id);	
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Status Group
-	 *
-	 * @access	public
-	 * @param	int
-	 * @return	mixed
-	 */
-	function get_status_group($group_id = '')
-	{
-		return $this->EE->status_model->get_status_group($group_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Status Groups
-	 *
-	 * @access	public
-	 * @return	mixed
-	 */
-	function get_status_groups()
-	{
-		return $this->EE->status_model->get_status_groups();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Status Group
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function delete_status_group($group_id)
-	{
-		$this->EE->status_model->delete_status_group($group_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Insert Statuses
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function insert_statuses($group_name, $status_color_open, $status_color_closed)
-	{
-		$this->EE->status_model->insert_statuses($group_name, $status_color_open, $status_color_closed);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update Statuses
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function update_statuses($group_name, $group_id, $status_color_open, $status_color_closed)
-	{
-		$this->EE->status_model->update_statuses($group_name, $group_id, $status_color_open, $status_color_closed);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Duplicate Status Group Name Check
-	 *
-	 * @access	public
-	 * @return	boolean
-	 */
-	function is_duplicate_status_group_name($group_name = '', $group_id = '')
-	{
-		return $this->EE->status_model->is_duplicate_status_group_name($group_name, $group_id);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get Disallowed Statuses
-	 *
-	 * @access	public
-	 * @param	int
-	 * @return	array
-	 */
-	function get_disallowed_statuses($group_id = '')
-	{
-		return $this->EE->status_model->get_disallowed_statues($group_id);
+		$reserved_terms = array(
+			'select', 'like', 'or_like', 
+			'or_where', 'where', 'where_in', 
+			'order_by', 'sort', 'limit', 
+			'offset'
+		);
+		
+		$params	= array(
+			'select' 	=> $select,
+			'where'		=> $where,
+			'order_by'	=> $order_by,
+			'sort'		=> $sort,
+			'limit'		=> $limit,
+			'offset'	=> $offset
+		);
+		
+		foreach($reserved_terms as $term)
+		{
+			if(is_array($select) && isset($select[$term]))
+				$params[$term] = $select[$term];
+		}	
+		
+		foreach($reserved_terms as $term)
+		{
+			if(isset($params[$term]) && $params[$term] !== FALSE)
+			{
+				$param = $params[$term];
+				
+				switch ($term)
+				{
+					case 'select': 
+						$this->EE->db->select($param);
+						break;
+						
+					case 'where': 
+						$this->EE->db->where($param);
+						break;
+						
+					case 'where_in': 
+						$this->EE->db->where_in($param);
+						break;
+						
+					case 'or_where': 
+						$this->EE->db->or_where($param);
+						break;
+						
+					case 'order_by':
+						if(!is_array($param))
+							$param = array($param);
+						
+						foreach($param as $param)
+						{ 
+							$sort = isset($param) ? $param : 'DESC';
+							$this->EE->db->order_by($param, $sort);
+						}
+						
+						break;
+						
+					case 'limit': 
+						if(!is_array($param))
+							$param = array($param);
+						
+						foreach($param as $param)
+						{
+							$offset = isset($param) ? $param : 0;					
+							$this->EE->db->limit($param, $offset);
+						}
+						
+						break;
+				}
+			}
+		}	
+		
+		return $params;		
 	}
 }
