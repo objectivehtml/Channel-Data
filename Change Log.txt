@@ -1,10 +1,20 @@
 /**
 * Channel Data
-* Author: Justin Kimbrell (SaucePan Creative)
-* Build: 0.1.0 - 20111007
+* Author: Justin Kimbrell (Objective HTML)
+* Build: 0.3.0 - 20111102
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.3.0 - 11/02/2011
+-------------------------
+Changed the library significantly yet again in favor of a more module approach based on CodeIgniter's driver object/class schema. 
+
+This also made some headway to implement a Third Party API framework. Developers can now add an API that is easily distinguishable and manageable. This API is designed to interact directly with modules programmatically.
+
+Version 0.2.0 - 10/25/2011
+--------------------------
+Completely rewrote the Channel Data API in favor a more polymorphic solution. The original API has been deprecated. This project is still clearly very beta.
 
 Version 0.1.0 - 10/07/2011
 --------------------------

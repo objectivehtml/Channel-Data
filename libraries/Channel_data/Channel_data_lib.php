@@ -1,28 +1,38 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
- * Channel Data Class
+ * Channel Data Library
  *
- * Channel Data is a convenience class designed to easily retrieve
- * channel data from plugins. By using this one class, you don't 
- * have to worry about loading models.
+ * This class is the core library to interact with ExpressionEngine's
+ * channel data. This class has been abstracted out of the loading
+ * logic to make it easier manager and more modular.
  *
- * @package		ExpressionEngine
+ * @package		Channel Data
+ * @subpackage	Libraries
  * @category	Library
  * @author		Justin Kimbrell
- * @copyright	Copyright (c) 2011, SaucePan Creative
- * @link 		http://www.inthesaucepan.com
- * @version		2.0 
- * @build		20110922
+ * @copyright	Copyright (c) 2011, Justin Kimbrell
+ * @link 		http://www.objectivehtml.com/libraries/channel_data
+ * @version		0.3.0 
+ * @build		20111102
  */
- 
-class Channel_data {
+
+class Channel_data_lib {
 	
-	public function __construct()
+	/**
+	 * Construct
+	 *
+	 * Gets the instance variable
+	 *
+	 * @param	array	Additional parameters used to instatiate the object
+	 * @return	void
+	 */	
+	
+	public function __construct($params = array())
 	{
 		$this->EE =& get_instance();
 	}
-	
+		
 	/**
 	 * Get a single category by passing a category id. 
 	 *
@@ -241,12 +251,12 @@ class Channel_data {
 	 
 	public function get_channel_field($field_id, $select = array('*'))
 	{
-		return $this->get_channel_fields($select, array('field_id' => $field_id));
+		return $this->get_fields($select, array('field_id' => $field_id));
 	}
 	
 	/**
-	 * Get custom fields using on a series of polymorphic parameters 
-	 * that returns an active record object.
+	 * Gets the custom fields by the group_id. This somehwat mimics the
+	 * the native get_channel_fields method.
 	 * 
 	 * @access	public
 	 * @param	mixed
@@ -258,10 +268,10 @@ class Channel_data {
 	 * @return	object
 	 */
 	 
-	public function get_channel_fields($select = array('*'), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+	public function get_channel_fields($group_id, $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 	{
-		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-		return $this->EE->db->get('channel_fields');
+		return $this->get_fields(array('*'), array('group_id' => $group_id), $order_by, $sort, $limit, $offset);
+	
 	}
 	
 	/**
@@ -299,7 +309,7 @@ class Channel_data {
 	
 	public function get_custom_fields($select = array('*'), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 	{
-		return $this->get_channel_fields($select, $where, $order_by, $sort, $limit, $offset);
+		return $this->get_fields(array('*'), array('group_id'), $order_by, $sort, $limit, $offset);
 	}
 	
 	/**
@@ -317,7 +327,9 @@ class Channel_data {
 	
 	public function get_fields($select = array('*'), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 	{
-		return $this->get_channel_fields($select, $where, $order_by, $sort, $limit, $offset);
+		$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+		
+		return $this->EE->db->get('channel_fields');
 	}
 	
 	/**
@@ -338,21 +350,6 @@ class Channel_data {
 		return $this->get_channel_field($field_id, $select);
 	}
  
-	/**
-	 * Plugin Name
-	 *
-	 * Plugin description
-	 *
-	 * @access	public
-	 * @return	string
-	 */
-	
-	public function get_fields_by_group($group_id, $select = array('*'))
-	{
-		return $this->get_channel_fields($select, array('group_id' => $group_id));
-	}	  
-		  
-	
 	/**
 	 * Get channel member groups by either a group_id or channel_id
 	 *
@@ -461,14 +458,21 @@ class Channel_data {
 	 * @access	public
 	 * @param	int
 	 * @param	mixed
-	 * @return	object
+	 * @return	mixed
 	 */
 	
 	public function get_entry($entry_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'))
 	{
-		$entry = $this->get_channel_title($entry_id)->row();
-				
-		return $this->get_entries($entry->channel_id, $select, array('channel_data.entry_id' => $entry_id));
+		$entry = $this->get_channel_title($entry_id);
+		
+		if($entry->num_rows() > 0)
+		{
+			$entry->row();
+		
+			return $this->get_entries($entry->channel_id, $select, array('channel_data.entry_id' => $entry_id));
+		}
+		
+		return FALSE;
 	}
 	
 	/**
@@ -481,10 +485,11 @@ class Channel_data {
 		
 	public function get_entries($channel_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 	{		
+		
 		if($channel_id !== FALSE)
 		{
 			$channel = $this->get_channel($channel_id)->row();
-			$fields	 = $this->get_channel_fields('*', array('group_id' => $channel->field_group))->result();
+			$fields	 = $this->get_channel_fields($channel->field_group)->result();
 					
 			foreach($fields as $field)
 			{
