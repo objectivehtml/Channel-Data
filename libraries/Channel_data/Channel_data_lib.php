@@ -237,6 +237,20 @@ class Channel_data_lib {
 	}
 	
 	/**
+	 * Gets a channel by passing a channel_name
+	 *
+	 * @access	public
+	 * @param	string	A string containing a channel name
+	 * @param	mixed	An array or string of fields to select. Default: '*'
+	 * @return	object
+	 */
+	 
+	public function get_channel_by_name($channel_name, $select = array('*'))
+	{
+		return $this->get_channels($select, array('channel_name' => $channel_name));
+	}
+	
+	/**
 	 * Get custom field from a specified field_id.
 	 * 
 	 * @access	public
