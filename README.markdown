@@ -61,7 +61,7 @@ So, when you load Channel Data by default, you inherently gain access to the lib
 		}
 
 		// End of File
-		// ./system/expressionengine/third_party/api.gmap.php
+		// ./system/expressionengine/third_party/gmap/api.gmap.php
 	?>
 
 _By extending the Base_API class, you inherent the Channel Data object. Now, find cool way to extend add-ons in a easier and much more powerful way._
