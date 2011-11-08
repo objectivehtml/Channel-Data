@@ -1,10 +1,14 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Build: 0.3.0 - 20111102
+* Build: 0.3.1 - 20111107
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.3.1 - 11/07/2011
+--------------------------
+Added a new method: get_channel_by_name(). I got tired of typing a long syntax for something I wanted to very frequently. Also updated the documentation, hopefully it's a litter easier to read.
 
 Version 0.3.0 - 11/02/2011
 -------------------------

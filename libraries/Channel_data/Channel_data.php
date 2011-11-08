@@ -25,55 +25,58 @@
 
 include_once('Channel_data_lib.php');
 
-class Channel_data extends Channel_data_lib {
-	
-	// Available Drivers
+if(!class_exists('Channel_data'))
+{
+	class Channel_data extends Channel_data_lib {
 		
-	public $drivers = array('channel_data_api');	
-	
-	/**
-	 * Construct
-	 *
-	 * Constructs the object and loads all the available drivers
-	 *
-	 * @param	array	Additional parameters used to instatiate the object
-	 * @return	void
-	 */	
-	
-	public function __construct($params = array())
-	{
-		parent::__construct($params);	
-		
-		$drivers = isset($params['drivers']) ? $params['drivers'] : $this->drivers;
-		
-		$this->load_drivers($drivers);	
-	}
-	
-	/**
-	 * Load Drivers
-	 *
-	 * Loads the Channel Data driver
-	 *
-	 * @param	mixed	You can override the default drivers by passing
-	 					an array of drivers to load.
-	 * @return	void
-	 */	
-	
-	public function load_drivers($drivers = FALSE)
-	{	
-		$this->drivers = $drivers ? $drivers : $this->drivers;
-		
-		foreach($this->drivers as $driver)
-		{
-			$driver	= ucfirst($driver);
-			$obj	= str_replace(array(__CLASS__.'_',strtolower(__CLASS__.'_')),'', $driver);
-			$path 	= 'drivers/' . ucfirst($driver) . '.php';
+		// Available Drivers
 			
-			include_once($path);				
-				
-			if(class_exists($driver))
+		public $drivers = array('channel_data_api');	
+		
+		/**
+		 * Construct
+		 *
+		 * Constructs the object and loads all the available drivers
+		 *
+		 * @param	array	Additional parameters used to instatiate the object
+		 * @return	void
+		 */	
+		
+		public function __construct($params = array())
+		{
+			parent::__construct($params);	
+			
+			$drivers = isset($params['drivers']) ? $params['drivers'] : $this->drivers;
+			
+			$this->load_drivers($drivers);	
+		}
+		
+		/**
+		 * Load Drivers
+		 *
+		 * Loads the Channel Data driver
+		 *
+		 * @param	mixed	You can override the default drivers by passing
+		 					an array of drivers to load.
+		 * @return	void
+		 */	
+		
+		public function load_drivers($drivers = FALSE)
+		{	
+			$this->drivers = $drivers ? $drivers : $this->drivers;
+			
+			foreach($this->drivers as $driver)
 			{
-				$this->$obj = new $driver();
+				$driver	= ucfirst($driver);
+				$obj	= str_replace(array(__CLASS__.'_',strtolower(__CLASS__.'_')),'', $driver);
+				$path 	= 'drivers/' . ucfirst($driver) . '.php';
+				
+				include_once($path);				
+					
+				if(class_exists($driver))
+				{
+					$this->$obj = new $driver();
+				}
 			}
 		}
 	}
