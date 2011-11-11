@@ -13,14 +13,19 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.3.0 
- * @build		20111102
+ * @version		0.3.3 
+ * @build		20111111
  */
 
 if(!class_exists('Channel_data_lib'))
 {
 	class Channel_data_lib {
 		
+		private $reserved_terms = array(
+			'select', 'like', 'or_like', 'or_where', 'where', 'where_in', 
+			'order_by', 'sort', 'limit', 'offset'
+		);
+			
 		/**
 		 * Construct
 		 *
@@ -289,45 +294,7 @@ if(!class_exists('Channel_data_lib'))
 			return $this->get_fields(array('*'), array('group_id' => $group_id), $order_by, $sort, $limit, $offset);
 		
 		}
-		
-		/**
-		 * Get a custom field using on a series of polymorphic parameters 
-		 * that returns an active record object.
-		 * 
-		 * @access	public
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @return	object
-		 */
-		
-		public function get_custom_field($field_id, $select = array('*'))
-		{
-			return $this->get_channel_field($field_id, $select);
-		}
-		
-		/**
-		 * Get custom fields using on a series of polymorphic parameters 
-		 * that returns an active record object.
-		 * 
-		 * @access	public
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @return	object
-		 */
-		
-		public function get_custom_fields($select = array('*'), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
-		{
-			return $this->get_fields(array('*'), array('group_id'), $order_by, $sort, $limit, $offset);
-		}
-		
+				
 		/**
 		 * An alias to get_channel_fields and get_custom_fields.
 		 *
@@ -468,6 +435,11 @@ if(!class_exists('Channel_data_lib'))
 			return $this->EE->db->get('channel_data');
 		}
 		
+		public function get_entries($select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{
+			return $this->get_channel_entries(FALSE, $select, $where = array(), $order_by, $sort, $limit, $offset);
+		}
+		
 		/**
 		 * Get a single entry passing an entry id
 		 *
@@ -477,15 +449,15 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	mixed
 		 */
 		
-		public function get_entry($entry_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'))
+		public function get_channel_entry($entry_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'))
 		{
 			$entry = $this->get_channel_title($entry_id);
 			
-			if($entry->num_rows() > 0)
+			if($entry->num_rows() == 1)
 			{
 				$entry->row();
 			
-				return $this->get_entries($entry->channel_id, $select, array('channel_data.entry_id' => $entry_id));
+				return $this->get_channel_entries($entry->row('channel_id'), $select, array('channel_data.entry_id' => $entry_id));
 			}
 			
 			return FALSE;
@@ -499,31 +471,70 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	string
 		 */
 			
-		public function get_entries($channel_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
-		{		
+		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{	
+			
+			//Default fields to select
+						
+			$default_select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status');
+			
+			
+			// If the parameter is polymorphic, then the variables are extracted
+			
+			if($this->is_polymorphic($select) && $polymorphic = $select)
+			{
+				extract($select);
+				
+				foreach($this->reserved_terms as $term)
+				{
+					if(!isset($polymorphic[$term]) && isset($$term) || isset($polymorphic[$term]))
+					{
+						if($term == 'select')
+							$$term = $default_select;
+						else
+							$$term = isset($polymorphic[$term]) ? $polymorphic[$term] : $$term;
+					}
+				}
+			}
+			
+			// If the channel_id is not false then only the specified channel fields are
+			// appended to the query. Otherwise, all fields are appended.
 			
 			if($channel_id !== FALSE)
 			{
 				$channel = $this->get_channel($channel_id)->row();
 				$fields	 = $this->get_channel_fields($channel->field_group)->result();
-						
-				foreach($fields as $field)
-				{
-					$select[] = 'field_id_'.$field->field_id.' as \''.$field->field_name.'\'';
-					
-					foreach($where as $index => $value)
-					{
-						if($field->field_name == $index)
-						{
-							unset($where[$index]);
-							$where['field_id_'.$field->field_id] = $value;
-						}
-					}			
-				}
-				
-				$this->EE->db->where($where);			
-				$this->EE->db->join('channel_data', 'channel_titles.entry_id = channel_data.entry_id');
+				$where['channel_data.channel_id'] = $channel_id;
 			}
+			else
+			{
+				$fields  = $this->get_fields()->result();
+				$select	 = array();
+			}
+			
+			
+			// Selects the appropriate field name and converts where converts
+			// where parameters to their corresponding field_id's
+			
+			foreach($fields as $field)
+			{
+				$select[] = 'field_id_'.$field->field_id.' as \''.$field->field_name.'\'';
+				
+				foreach($where as $index => $value)
+				{
+					if($field->field_name == $index)
+					{
+						unset($where[$index]);
+						$where['field_id_'.$field->field_id] = $value;
+					}
+				}			
+			}
+			
+			// Joins the channel_data table
+					
+			$this->EE->db->join('channel_data', 'channel_titles.entry_id = channel_data.entry_id');
+			
+			// Converts the params into active record methods
 			
 			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
 			
@@ -600,14 +611,7 @@ if(!class_exists('Channel_data_lib'))
 		 */
 		 
 		public function convert_params($select, $where, $order_by, $sort, $limit, $offset)
-		{
-			$reserved_terms = array(
-				'select', 'like', 'or_like', 
-				'or_where', 'where', 'where_in', 
-				'order_by', 'sort', 'limit', 
-				'offset'
-			);
-			
+		{			
 			$params	= array(
 				'select' 	=> $select,
 				'where'		=> $where,
@@ -617,22 +621,29 @@ if(!class_exists('Channel_data_lib'))
 				'offset'	=> $offset
 			);
 			
-			foreach($reserved_terms as $term)
+			foreach($this->reserved_terms as $term)
 			{
 				if(is_array($select) && isset($select[$term]))
 					$params[$term] = $select[$term];
 			}	
 			
-			foreach($reserved_terms as $term)
+			foreach($this->reserved_terms as $term)
 			{
 				if(isset($params[$term]) && $params[$term] !== FALSE)
 				{
+					
 					$param = $params[$term];
 					
 					switch ($term)
 					{
-						case 'select': 
-							$this->EE->db->select($param);
+						case 'select':
+						
+							if(!is_array($param))
+								$param = array($param); 
+							
+							foreach($param as $select)
+								$this->EE->db->select($select);
+							
 							break;
 							
 						case 'where': 
@@ -653,7 +664,8 @@ if(!class_exists('Channel_data_lib'))
 							
 							foreach($param as $param)
 							{ 
-								$sort = isset($param) ? $param : 'DESC';
+								$sort = isset($sort) ? $sort : 'DESC';
+								
 								$this->EE->db->order_by($param, $sort);
 							}
 							
@@ -663,11 +675,12 @@ if(!class_exists('Channel_data_lib'))
 							if(!is_array($param))
 								$param = array($param);
 							
-							foreach($param as $param)
-							{
-								$offset = isset($param) ? $param : 0;					
+							$offset = isset($param['offset']) ? $param['offset'] : $offset;
+							$offset	= $offset !== FALSE ? $offset : 0;	
+							
+							foreach($param as $param)							
 								$this->EE->db->limit($param, $offset);
-							}
+							
 							
 							break;
 					}
@@ -675,6 +688,33 @@ if(!class_exists('Channel_data_lib'))
 			}	
 			
 			return $params;		
+		}
+		
+		/**
+		 * Is Polymorphic
+		 *
+		 * Determines if a parameter is polymorphic
+		 *
+		 * @access	public
+		 * @param	mixed	A mixed value variable
+		 * @return	bool
+		 */
+			
+		public function is_polymorphic($param)
+		{
+			if(is_array($param))
+			{
+				foreach($this->reserved_terms as $term)
+				{
+					if(isset($param[$term]))
+					{
+						return TRUE;
+					}
+				}
+			
+			}
+			
+			return FALSE;
 		}
 	}
 }

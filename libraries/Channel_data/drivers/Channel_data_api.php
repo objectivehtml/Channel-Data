@@ -8,12 +8,12 @@
  *
  * @package		Channel Data
  * @subpackage	Libraries
- * @category	Library
+ * @category	Class
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.3.0 
- * @build		20111102
+ * @version		0.3.3 
+ * @build		20111111
  */
  
 abstract class Base_API extends Channel_data {
@@ -34,6 +34,8 @@ abstract class Base_API extends Channel_data {
  * @category	Drivers
  * @author		Justin Kimbrell
  * @link		http://www.objectivehtml.com/libraries/channel_data
+ * @version		0.3.2 
+ * @build		20111108
  */
 
 class Channel_data_api {
@@ -41,12 +43,13 @@ class Channel_data_api {
 	public $name;
 	public $author;
 	public $version;
-
+	
 	/**
 	 * Does API Exist
 	 *
 	 * Returns a true if the API exists
 	 *
+	 * @access	public
 	 * @param	string	Name of the API to load
 	 * @return	void
 	 */
@@ -81,6 +84,7 @@ class Channel_data_api {
 	 *
 	 * Creates and array with information about the module
 	 *
+	 * @access	public
 	 * @param	type	description
 	 * @return	void
 	 */
@@ -100,6 +104,7 @@ class Channel_data_api {
 	 *
 	 * Instantiates a new instance of the module class
 	 *
+	 * @access	public
 	 * @param	string	Name of the module being loaded
 	 * @param	array	An array of parameters that will get passed to the 
 	 *					constructor method.
@@ -137,6 +142,7 @@ class Channel_data_api {
 	 *
 	 * Call the Usage method on a given module
 	 *
+	 * @access	public
 	 * @param	string	Name of the module being loaded
 	 * @param	array	An array of parameters that will get passed to the 
 	 *					constructor method.

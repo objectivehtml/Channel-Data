@@ -1,10 +1,19 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Build: 0.3.1 - 20111107
+* Version: 0.3.3
+* Build: 20111111
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.3.3 - 11/11/2011
+--------------------------
+Bug fixed that prevented the get_channel_entry() method from working correctly
+
+Version 0.3.2 - 11/08/2011
+--------------------------
+Bug fixes within some of the polymorphic properties
 
 Version 0.3.1 - 11/07/2011
 --------------------------
