@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.3.3 
- * @build		20111111
+ * @version		0.3.5 
+ * @build		20111130
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -39,7 +39,23 @@ if(!class_exists('Channel_data_lib'))
 		{
 			$this->EE =& get_instance();
 		}
+		
+		/**
+		 * Gets 
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	string
+		 */
+		
+		public function get($table, $select = array(), $where = array(), $order_by = FALSE, $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{
+			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
 			
+			return $this->EE->db->get($table);
+		}
+		
 		/**
 		 * Get a single category by passing a category id. 
 		 *
@@ -51,7 +67,7 @@ if(!class_exists('Channel_data_lib'))
 		
 		public function get_category($category_id, $select = array('*'))
 		{
-			return $this->get_categories($select, array('category_id' => $category_id));
+			return $this->get_categories($select, array('cat_id' => $category_id));
 		}
 		
 		/**
@@ -68,11 +84,9 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 		
-		public function get_categories($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		public function get_categories($select = array(), $where = array(), $order_by = 'cat_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{			
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-			
-			return $this->EE->db->get('categories');
+			return $this->get('categories', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
 		/**
@@ -103,11 +117,9 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 		
-		public function get_category_fields($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		public function get_category_fields($select = array(), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{			
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-			
-			return $this->EE->db->get('category_fields');
+			return $this->get('category_fields', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
 		/**
@@ -124,11 +136,9 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 		
-		public function get_category_field_data($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		public function get_category_field_data($select = array(), $where = array(), $order_by = 'cat_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{			
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-			
-			return $this->EE->db->get('category_field_data');
+			return $this->get('category_field_data', $select, $where, $order_by, $sort, $limit, $offset);
 		
 		}
 		
@@ -148,7 +158,7 @@ if(!class_exists('Channel_data_lib'))
 		 
 		public function get_category_group($group_id, $select = array('*'))
 		{
-			return $this->EE->db->get($select, array('group_id' => $group_id));
+			return $this->get_category_groups($select, array('group_id' => $group_id));
 		}
 		
 		/**
@@ -165,12 +175,9 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 		
-		public function get_category_groups($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		public function get_category_groups($select = array(), $where = array(), $order_by = 'group_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{			
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-			
-			return $this->EE->db->get('category_groups');
-		
+			return $this->get('category_groups', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
 		/**
@@ -201,11 +208,9 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 		
-		public function get_category_posts($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		public function get_category_posts($select = array(), $where = array(), $order_by = 'entry_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{			
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-			
-			return $this->EE->db->get('category_posts');
+			return $this->get('category_posts', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
 		/**
@@ -238,9 +243,7 @@ if(!class_exists('Channel_data_lib'))
 		
 		public function get_channels($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{			
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-			
-			return $this->EE->db->get('channels');
+			return $this->get('channels', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
 		/**
@@ -289,9 +292,15 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 		 
-		public function get_channel_fields($group_id, $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		public function get_channel_fields($group_id = false, $select = array('*'), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{
-			return $this->get_fields(array('*'), array('group_id' => $group_id), $order_by, $sort, $limit, $offset);
+			if($group_id !== FALSE)
+			{
+				$group_id = array('group_id' => $group_id);
+				$where = array_merge($where, $group_id);
+			}
+			
+			return $this->get_fields($select, $where, $order_by, $sort, $limit, $offset);
 		
 		}
 				
@@ -310,9 +319,7 @@ if(!class_exists('Channel_data_lib'))
 		
 		public function get_fields($select = array('*'), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-			
-			return $this->EE->db->get('channel_fields');
+			return $this->get('channel_fields', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
 		/**
@@ -344,17 +351,15 @@ if(!class_exists('Channel_data_lib'))
 		
 		public function get_channel_member_group($group_id = FALSE, $channel_id = FALSE)
 		{
-			$params = array();
+			$where = array();
 			
 			if($group_id !== FALSE)
-				$params['where']['group_id'] = $group_id;
+				$where['group_id'] = $group_id;
 			
 			if($channel_id !== FALSE)
-				$params['where']['channel_id'] = $channel_id;
+				$where['channel_id'] = $channel_id;
 			
-			$this->convert_params($params);
-			
-			return $this->EE->db->get('channel_member_groups');
+			return $this->get('channel_member_groups', array(), $where, 'group_id', 'DESC', FALSE, 0);
 		}
 		
 		/**
@@ -373,10 +378,7 @@ if(!class_exists('Channel_data_lib'))
 		
 		public function get_channel_member_groups($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{			
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-			
-			
-			return $this->EE->db->get('channel_member_groups');
+			return $this->get('channel_member_groups', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
 		/**
@@ -408,10 +410,8 @@ if(!class_exists('Channel_data_lib'))
 		 */
 		
 		public function get_channel_titles($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
-		{			
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-			
-			return $this->EE->db->get('channel_titles');
+		{
+			return $this->get('channel_titles', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
 		/**
@@ -430,14 +430,44 @@ if(!class_exists('Channel_data_lib'))
 		
 		public function get_channel_data($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{			
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-					
-			return $this->EE->db->get('channel_data');
+			return $this->get('channel_data', $select, $where, $order_by, $sort, $limit, $offset);
 		}
-		
-		public function get_entries($select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+			
+		/**
+		 * Gets channel entries using a series of polymorphic parameters
+		 * that returns an active record object.
+		 * 
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+				
+		public function get_entries($select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{
 			return $this->get_channel_entries(FALSE, $select, $where = array(), $order_by, $sort, $limit, $offset);
+		}		
+			
+		/**
+		 * Gets a single channel entry
+		 * 
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+			
+		public function get_entry($entry_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'))
+		{
+			return $this->get_entries($select, array('channel_data.entry_id' => $entry_id));	
 		}
 		
 		/**
@@ -449,7 +479,7 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	mixed
 		 */
 		
-		public function get_channel_entry($entry_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'))
+		public function get_channel_entry($entry_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'))
 		{
 			$entry = $this->get_channel_title($entry_id);
 			
@@ -473,10 +503,10 @@ if(!class_exists('Channel_data_lib'))
 			
 		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{	
-			
+		
 			//Default fields to select
 						
-			$default_select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status');
+			$default_select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status');
 			
 			
 			// If the parameter is polymorphic, then the variables are extracted
@@ -569,12 +599,48 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 		
-		public function get_relationships($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		public function get_relationships($select = array(), $where = array(), $order_by = 'rel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{			
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
-			
-			return $this->EE->db->get('relationships');
+			return $this->get('relationships', $select, $where, $order_by, $sort, $limit, $offset);
 		}	
+		
+		/**
+		 * Get child relationships by passing an entry_id
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_related_child_entries($entry_id, $select = '*')
+		{
+			return $this->get_relationships(array(
+				'select' => $select,
+				'where'	 => array(
+					'rel_child_id' => $entry_id
+				)
+			));
+		}
+		
+		/**
+		 * Get parent relationships by passing an entry_id
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_related_entries($entry_id, $select = '*')
+		{
+			return $this->get_relationships(array(
+				'select' => $select,
+				'where'	 => array(
+					'rel_parent_id' => $entry_id
+				)
+			));
+		}
 		
 		/**
 		 * Convert Params

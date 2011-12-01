@@ -1,11 +1,19 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.3.3
-* Build: 20111111
+* Version: 0.3.5
+* Build: 20111130
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.3.5 - 11/30/2011
+--------------------------
+Lots of bug fixes and code optimization. Stable release 1.0 release is starting to take shape. No major API changes for a while, and doesn't appear to need any. Every method has been tested at least once, but bugs could still be present.
+
+Version 0.3.4 - 11/15/2011
+--------------------------
+Bug fixes
 
 Version 0.3.3 - 11/11/2011
 --------------------------
