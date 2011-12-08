@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.3.5
-* Build: 20111130
+* Version: 0.3.6
+* Build: 20111208
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.3.6 - 12/08/2011
+--------------------------
+Added two new methods: get_actions() and get_action_id() to quickly get one or more action ids.
 
 Version 0.3.5 - 11/30/2011
 --------------------------

@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.3.5 
- * @build		20111130
+ * @version		0.3.6 
+ * @build		20111208
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -41,12 +41,16 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Gets 
+		 * Gets a specified table using polymorphic parameters
 		 *
 		 * @access	public
-		 * @param	int
 		 * @param	mixed
-		 * @return	string
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
 		 */
 		
 		public function get($table, $select = array(), $where = array(), $order_by = FALSE, $sort = 'DESC', $limit = FALSE, $offset = 0)
@@ -54,6 +58,47 @@ if(!class_exists('Channel_data_lib'))
 			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
 			
 			return $this->EE->db->get($table);
+		}
+		
+		/**
+		 * Gets a single action_id from a class and method
+		 *
+		 * @access	public
+		 * @param	string A valid class name
+		 * @param	string A method within the class
+		 * @return	int
+		 */
+		 
+		public function get_action_id($class, $method)
+		{
+			$return = $this->get_actions(array('*'), array(
+				'class' 	=> ucfirst($class), 
+				'method' 	=> $method
+			));
+			
+			if($return->num_rows() == 0)
+				return FALSE;
+			
+			return (int) $return->row('action_id');
+		}
+		
+		/**
+		 * Gets records from the actions table using polymorphic
+		 * parameters.
+		 *
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_actions($select = array(), $where = array(), $order_by = FALSE, $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{
+			return $this->get('actions', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
 		/**
