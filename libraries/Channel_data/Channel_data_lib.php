@@ -13,7 +13,7 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.3.6 
+ * @version		0.3.7 
  * @build		20111208
  */
 
@@ -345,7 +345,7 @@ if(!class_exists('Channel_data_lib'))
 				$where = array_merge($where, $group_id);
 			}
 			
-			return $this->get_fields($select, $where, $order_by, $sort, $limit, $offset);
+			return $this->get('channel_fields', $select, $where, $order_by, $sort, $limit, $offset);
 		
 		}
 				
@@ -723,6 +723,19 @@ if(!class_exists('Channel_data_lib'))
 		 
 		public function convert_params($select, $where, $order_by, $sort, $limit, $offset)
 		{			
+			
+			if($this->is_polymorphic($select))
+			{
+				$keywords = array('where', 'order_by', 'sort', 'limit', 'offset');
+				
+				foreach($keywords as $keyword)
+				{
+					$$keyword = isset($select[$keyword]) ? $select[$keyword] : $$keyword;
+				}
+				
+				$select = isset($select['select']) ? $select['select'] : array('*');
+			}
+			
 			$params	= array(
 				'select' 	=> $select,
 				'where'		=> $where,
@@ -732,19 +745,20 @@ if(!class_exists('Channel_data_lib'))
 				'offset'	=> $offset
 			);
 			
+			/*
 			foreach($this->reserved_terms as $term)
 			{
 				if(is_array($select) && isset($select[$term]))
 					$params[$term] = $select[$term];
 			}	
+			*/
 			
 			foreach($this->reserved_terms as $term)
 			{
 				if(isset($params[$term]) && $params[$term] !== FALSE)
 				{
-					
 					$param = $params[$term];
-					
+								
 					switch ($term)
 					{
 						case 'select':

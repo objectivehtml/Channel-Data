@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.3.6
+* Version: 0.3.7
 * Build: 20111208
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.3.7 - 12/08/2011
+--------------------------
+Bug fixed that prevented the polymorphic parameters from working when the select and where parameters aren't present.
 
 Version 0.3.6 - 12/08/2011
 --------------------------

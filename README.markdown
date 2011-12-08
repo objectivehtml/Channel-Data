@@ -1,7 +1,7 @@
 Channel Data
 ============
 
-### Version 0.3.6 - 20111208
+### Version 0.3.7 - 20111208
 
 #### By Justin Kimbrell / Objective HTML
 
@@ -71,7 +71,7 @@ _By extending the Base_API class, you inherent the Channel Data object. Now, fin
 Polymorphic Parameters
 ----------------------
 
-Almost of the methods have polymorphic parameters. Helper methods used to quickly retrieve a single entry _do not_ use polymorphic parameters. The first parameter in each polymorphic method can be use it to select fields in a query, or you can define an active record array. It's really just a preference have there are reasons to use both, but really it just makes for a really versatile and functional API.
+Almost all of the methods have polymorphic parameters. Helper methods are used to quickly retrieve a single entry _do not_ use polymorphic parameters. The first parameter in each polymorphic method can be use it to select fields in a query, or you can define an active record array. It's really just a preference, there are reasons to use both, but really it just makes for a really versatile and functional API and more memorable.
 
 #### Example A
 	
