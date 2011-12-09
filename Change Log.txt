@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.3.7
-* Build: 20111208
+* Version: 0.4.0
+* Build: 20111209
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.4.0 - 12/09/2011
+--------------------------
+Officially appended a BSD license to the library making it free and open to use for the life of the project.
 
 Version 0.3.7 - 12/08/2011
 --------------------------

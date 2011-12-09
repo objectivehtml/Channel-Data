@@ -19,8 +19,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.3.7
- * @build		20111208
+ * @version		0.4.0
+ * @build		20111209
  */
 
 include_once('Channel_data_lib.php');
