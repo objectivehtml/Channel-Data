@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.4.0
-* Build: 20111209
+* Version: 0.4.1
+* Build: 20111213
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.4.1 - 12/13/2011
+--------------------------
+Rewrote the logic behind the where conditional element and how it's passed to Active Record. Fixed bugs that prevented OR and AND clauses from working correctly.
 
 Version 0.4.0 - 12/09/2011
 --------------------------

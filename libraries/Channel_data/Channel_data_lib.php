@@ -13,13 +13,19 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.4.0
- * @build		20111209
+ * @version		0.4.1
+ * @build		20111213
  */
 
 if(!class_exists('Channel_data_lib'))
 {
 	class Channel_data_lib {
+		
+		private $ambigious_fields = array(
+			'entry_id',
+			'site_id',
+			'channel_id'
+		);
 		
 		private $reserved_terms = array(
 			'select', 'like', 'or_like', 'or_where', 'where', 'where_in', 
@@ -546,8 +552,8 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	string
 		 */
 			
-		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
-		{	
+		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0, $debug = FALSE)
+		{		
 		
 			//Default fields to select
 						
@@ -564,10 +570,11 @@ if(!class_exists('Channel_data_lib'))
 				{
 					if(!isset($polymorphic[$term]) && isset($$term) || isset($polymorphic[$term]))
 					{
-						if($term == 'select')
+						if($term == 'select' && !isset($$term))
 							$$term = $default_select;
 						else
 							$$term = isset($polymorphic[$term]) ? $polymorphic[$term] : $$term;
+						
 					}
 				}
 			}
@@ -578,8 +585,13 @@ if(!class_exists('Channel_data_lib'))
 			if($channel_id !== FALSE)
 			{
 				$channel = $this->get_channel($channel_id)->row();
+				
 				$fields	 = $this->get_channel_fields($channel->field_group)->result();
-				$where['channel_data.channel_id'] = $channel_id;
+				
+				if(is_array($where))
+					$where	 = array_merge(array('channel_data.channel_id' => $channel_id), $where);
+				else
+					$where = array();
 			}
 			else
 			{
@@ -587,31 +599,42 @@ if(!class_exists('Channel_data_lib'))
 				$select	 = array();
 			}
 			
-			
 			// Selects the appropriate field name and converts where converts
 			// where parameters to their corresponding field_id's
-			
 			foreach($fields as $field)
 			{
-				$select[] = 'field_id_'.$field->field_id.' as \''.$field->field_name.'\'';
+				if(is_array($select))
+					$select[] = 'field_id_'.$field->field_id.' as \''.$field->field_name.'\'';
 				
 				foreach($where as $index => $value)
 				{
+					$index = $this->check_ambiguity($index);
+										
 					if($field->field_name == $index)
 					{
 						unset($where[$index]);
 						$where['field_id_'.$field->field_id] = $value;
 					}
-				}			
+				}		
 			}
+			
 			
 			// Joins the channel_data table
 					
 			$this->EE->db->join('channel_data', 'channel_titles.entry_id = channel_data.entry_id');
 			
+			$params = array(
+				'select' 	=> $select,
+				'where' 	=> $where,
+				'order_by' 	=> $order_by,
+				'sort' 		=> $sort,
+				'limit' 	=> $limit,
+				'offset'	=> $offset
+			);
+			
 			// Converts the params into active record methods
 			
-			$this->convert_params($select, $where, $order_by, $sort, $limit, $offset);
+			$this->convert_params($params, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE);
 			
 			return $this->EE->db->get('channel_titles');		
 		}
@@ -645,7 +668,7 @@ if(!class_exists('Channel_data_lib'))
 		 */
 		
 		public function get_relationships($select = array(), $where = array(), $order_by = 'rel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
-		{			
+		{	
 			return $this->get('relationships', $select, $where, $order_by, $sort, $limit, $offset);
 		}	
 		
@@ -687,6 +710,24 @@ if(!class_exists('Channel_data_lib'))
 			));
 		}
 		
+		public function get_related_parent_entries($entry_id, $select = '*') 
+		{
+			return $this->get_related_entries($entry_id, $select);
+		}
+		
+		public function check_ambiguity($field, $debug = FALSE)
+		{			
+			foreach($this->ambigious_fields as $fields)
+			{			
+				if(strpos($field, $fields) !== FALSE)
+				{
+					$field = 'channel_titles.'.$field;
+				}
+			}			
+			
+			return $field;
+		}
+		
 		/**
 		 * Convert Params
 		 * 
@@ -721,9 +762,8 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	array
 		 */
 		 
-		public function convert_params($select, $where, $order_by, $sort, $limit, $offset)
+		public function convert_params($select, $where, $order_by, $sort, $limit, $offset, $debug = FALSE)
 		{			
-			
 			if($this->is_polymorphic($select))
 			{
 				$keywords = array('where', 'order_by', 'sort', 'limit', 'offset');
@@ -753,12 +793,13 @@ if(!class_exists('Channel_data_lib'))
 			}	
 			*/
 			
+			
 			foreach($this->reserved_terms as $term)
 			{
 				if(isset($params[$term]) && $params[$term] !== FALSE)
 				{
 					$param = $params[$term];
-								
+						
 					switch ($term)
 					{
 						case 'select':
@@ -767,19 +808,93 @@ if(!class_exists('Channel_data_lib'))
 								$param = array($param); 
 							
 							foreach($param as $select)
+							{
+								//$select = $this->check_ambiguity($select);
+								
 								$this->EE->db->select($select);
+							}
 							
 							break;
 							
 						case 'where': 
-							$this->EE->db->where($param);
+							$where_sql = array();
+							
+							foreach($param as $field => $value)
+							{								
+								if(!is_array($value)) $value = array($value);
+								
+								foreach($value as $where_val)
+								{
+									$where_field = $field;
+								
+									if(strpos($field, 'or') !== FALSE)
+									{			
+										unset($params['where'][$field]);
+											
+										$where_field = str_replace('or', '', $field);
+										
+										$where_sql[] = $this->EE->db->protect_identifiers(trim($where_field). ' = \''.$where_val.'\'') . ' OR ';
+										
+									}
+									else
+									{
+										$where_sql[] = $this->EE->db->protect_identifiers(trim($where_field). ' = \''.$where_val.'\'') . ' AND ';
+									}
+								}
+								
+							}
+							 
+							$sql = '';
+							
+							foreach($where_sql as $value)
+							{
+								
+								$sql .= $value . ' ';
+							}
+											
+							$sql = trim(rtrim(rtrim(trim($sql), 'AND'), 'OR'));
+							
+							if(!empty($sql)) $this->EE->db->where($sql, FALSE, FALSE);
+							
+							/*
+							foreach($param as $field => $value)
+							{										
+								if(!is_array($value)) $value = array($value);
+								
+								//$field = $this->check_ambiguity($field, TRUE);
+								foreach($value as $where_val)
+								{
+								
+									if(strpos($field, 'or') !== FALSE)
+									{			
+										unset($params['where'][$field]);
+											
+										$where_field = trim(str_replace('or', '', $field));
+										
+										$this->EE->db->or_where($where_field, $where_val);
+									}
+									else if(strpos($field, 'in') !== FALSE)
+									{
+										$field = trim(str_replace('in', '', $field));
+										
+										$this->EE->db->where_in($field, $where_val);
+									}
+									else
+									{
+										$this->EE->db->where($field, $where_val);
+									}
+								}
+							}
+							*/
+							
+							//$this->EE->db->where($param);
 							break;
 							
 						case 'where_in': 
 							$this->EE->db->where_in($param);
 							break;
 							
-						case 'or_where': 
+						case 'or_where':
 							$this->EE->db->or_where($param);
 							break;
 							
