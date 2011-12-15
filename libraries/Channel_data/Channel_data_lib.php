@@ -13,13 +13,15 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.4.1
- * @build		20111213
+ * @version		0.4.2
+ * @build		20111214
  */
 
 if(!class_exists('Channel_data_lib'))
 {
 	class Channel_data_lib {
+		
+		private $conditionals = array('\!\=', '\<\=', '\>\=', '\<', '\>', '\=');
 		
 		private $ambigious_fields = array(
 			'entry_id',
@@ -518,7 +520,7 @@ if(!class_exists('Channel_data_lib'))
 			
 		public function get_entry($entry_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'))
 		{
-			return $this->get_entries($select, array('channel_data.entry_id' => $entry_id));	
+			return $this->get_channel_entry($entry_id, $select);
 		}
 		
 		/**
@@ -559,7 +561,6 @@ if(!class_exists('Channel_data_lib'))
 						
 			$default_select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status');
 			
-			
 			// If the parameter is polymorphic, then the variables are extracted
 			
 			if($this->is_polymorphic($select) && $polymorphic = $select)
@@ -570,7 +571,7 @@ if(!class_exists('Channel_data_lib'))
 				{
 					if(!isset($polymorphic[$term]) && isset($$term) || isset($polymorphic[$term]))
 					{
-						if($term == 'select' && !isset($$term))
+						if($term == 'select' && !isset($$term['select']))
 							$$term = $default_select;
 						else
 							$$term = isset($polymorphic[$term]) ? $polymorphic[$term] : $$term;
@@ -715,6 +716,65 @@ if(!class_exists('Channel_data_lib'))
 			return $this->get_related_entries($entry_id, $select);
 		}
 		
+		/**
+		 * Get status group by passing a group_id
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_status_group($group_id, $select = '*')
+		{
+			return $this->get_status_groups($select, array(
+				'group_id' => $group_id
+			));
+		}
+		
+		public function get_status_groups($select = array(), $where = array(), $order_by = 'group_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{
+			return $this->get('status_groups', $select, $where, $order_by, $sort, $limit, $offset);
+		}
+		
+		/**
+		 * Get status by passing a status_id
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_status($status_id, $select = '*')
+		{
+			return $this->get_statuses($select, array(
+				'status_id' => $status_id
+			));
+		}
+		
+		/**
+		 * Get statuses by passing a group_id
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_statuses_by_group($group_id, $select = '*', $where = array(), $order_by = 'status_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{
+			return $this->get_statuses($select, array_merge($where, array(
+				'group_id' => $group_id
+			)), $order_by, $sort, $limit, $offset);
+		}
+		
+		public function get_statuses($select = array(), $where = array(), $order_by = 'status_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{
+			return $this->get('statuses', $select, $where, $order_by, $sort, $limit, $offset);
+		}
+		
+		
 		public function check_ambiguity($field, $debug = FALSE)
 		{			
 			foreach($this->ambigious_fields as $fields)
@@ -766,14 +826,21 @@ if(!class_exists('Channel_data_lib'))
 		{			
 			if($this->is_polymorphic($select))
 			{
-				$keywords = array('where', 'order_by', 'sort', 'limit', 'offset');
+				$subject = $select;
+				
+				$keywords = array('select', 'where', 'order_by', 'sort', 'limit', 'offset');
 				
 				foreach($keywords as $keyword)
 				{
-					$$keyword = isset($select[$keyword]) ? $select[$keyword] : $$keyword;
+					$$keyword = isset($subject[$keyword]) ? $subject[$keyword] : $$keyword;
 				}
 				
-				$select = isset($select['select']) ? $select['select'] : array('*');
+				if(isset($select['select']))
+					$select = $select['select'];
+				else
+					if(!isset($select))
+						$select = array('*');
+						
 			}
 			
 			$params	= array(
@@ -792,7 +859,7 @@ if(!class_exists('Channel_data_lib'))
 					$params[$term] = $select[$term];
 			}	
 			*/
-			
+				
 			
 			foreach($this->reserved_terms as $term)
 			{
@@ -825,77 +892,28 @@ if(!class_exists('Channel_data_lib'))
 								
 								foreach($value as $where_val)
 								{
-									$where_field = $field;
+									$where_field = trim($field);
 								
+									$concat = ' AND ';
+									
 									if(strpos($field, 'or') !== FALSE)
 									{			
 										unset($params['where'][$field]);
 											
-										$where_field = str_replace('or', '', $field);
-										
-										$where_sql[] = $this->EE->db->protect_identifiers(trim($where_field). ' = \''.$where_val.'\'') . ' OR ';
-										
+										$where_field 	= trim(str_replace('or', '', $field));
+										$concat 		= ' OR ';									
 									}
-									else
-									{
-										$where_sql[] = $this->EE->db->protect_identifiers(trim($where_field). ' = \''.$where_val.'\'') . ' AND ';
-									}
+									
+									$where_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field, $debug) . '\'' . $where_val . '\'';
+										
 								}
-								
 							}
 							 
-							$sql = '';
-							
-							foreach($where_sql as $value)
-							{
-								
-								$sql .= $value . ' ';
-							}
-											
-							$sql = trim(rtrim(rtrim(trim($sql), 'AND'), 'OR'));
-							
+							$sql = trim(implode(' ', $where_sql));			
+							$sql = trim(ltrim(ltrim($sql, 'AND'), 'OR'));
+										
 							if(!empty($sql)) $this->EE->db->where($sql, FALSE, FALSE);
 							
-							/*
-							foreach($param as $field => $value)
-							{										
-								if(!is_array($value)) $value = array($value);
-								
-								//$field = $this->check_ambiguity($field, TRUE);
-								foreach($value as $where_val)
-								{
-								
-									if(strpos($field, 'or') !== FALSE)
-									{			
-										unset($params['where'][$field]);
-											
-										$where_field = trim(str_replace('or', '', $field));
-										
-										$this->EE->db->or_where($where_field, $where_val);
-									}
-									else if(strpos($field, 'in') !== FALSE)
-									{
-										$field = trim(str_replace('in', '', $field));
-										
-										$this->EE->db->where_in($field, $where_val);
-									}
-									else
-									{
-										$this->EE->db->where($field, $where_val);
-									}
-								}
-							}
-							*/
-							
-							//$this->EE->db->where($param);
-							break;
-							
-						case 'where_in': 
-							$this->EE->db->where_in($param);
-							break;
-							
-						case 'or_where':
-							$this->EE->db->or_where($param);
 							break;
 							
 						case 'order_by':
@@ -928,6 +946,39 @@ if(!class_exists('Channel_data_lib'))
 			}	
 			
 			return $params;		
+		}
+		
+		public function remove_conditionals($subject)
+		{		
+			foreach($this->conditionals as $condition)
+			{
+				$match = str_replace('\\', '', $condition);
+				$subject = str_replace($match, '', $subject);
+			}
+			
+			return $subject;
+		}
+		
+		public function assign_conditional($str, $debug = FALSE)
+		{
+			$conditionals 	= $this->conditionals;
+			$match			= FALSE;
+			
+			foreach($conditionals as $condition)
+			{				
+				$matches = array();
+				
+				if(preg_match('/^([a-zA-Z0-9]).+'.$condition.'/', $str, $matches))
+				{
+					$match = TRUE;
+					$return = $condition;
+					break;
+				}
+			}		
+		
+			if(!$match) $return = $conditionals[count($conditionals) - 1];
+					
+			return ' '.str_replace('\\', '', $return).' ';
 		}
 		
 		/**

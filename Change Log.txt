@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.4.1
-* Build: 20111213
+* Version: 0.4.2
+* Build: 20111214
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.4.2 - 12/14/2011
+--------------------------
+Paying a lot of attention to the polymorphic parameters and removing any bugs I can find. Also added complex conditionals and added "AND/OR" clauses to WHERE statements.
 
 Version 0.4.1 - 12/13/2011
 --------------------------
