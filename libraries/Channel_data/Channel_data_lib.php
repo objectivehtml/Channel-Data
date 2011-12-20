@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.4.2
- * @build		20111214
+ * @version		0.5.1
+ * @build		20111217
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -345,14 +345,15 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 		 
-		public function get_channel_fields($group_id = false, $select = array('*'), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		public function get_channel_fields($channel_id = false, $select = array('*'), $where = array(), $order_by = 'field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{
-			if($group_id !== FALSE)
+			if($channel_id !== FALSE)
 			{
-				$group_id = array('group_id' => $group_id);
+				$channel = $this->get_channel($channel_id)->row();
+				$group_id = array('group_id' => $channel->field_group);
 				$where = array_merge($where, $group_id);
 			}
-			
+				
 			return $this->get('channel_fields', $select, $where, $order_by, $sort, $limit, $offset);
 		
 		}
@@ -391,6 +392,20 @@ if(!class_exists('Channel_data_lib'))
 		public function get_field($field_id, $select = array('*'))
 		{
 			return $this->get_channel_field($field_id, $select);
+		}
+	 
+		/**
+		 * Get a custom field by passing a field_name.
+		 *
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_field_by_name($field_name, $select = array('*'))
+		{
+			return $this->get_fields($select, array('field_name' => $field_name));
 		}
 	 
 		/**
@@ -585,9 +600,7 @@ if(!class_exists('Channel_data_lib'))
 			
 			if($channel_id !== FALSE)
 			{
-				$channel = $this->get_channel($channel_id)->row();
-				
-				$fields	 = $this->get_channel_fields($channel->field_group)->result();
+				$fields	 = $this->get_channel_fields($channel_id)->result();
 				
 				if(is_array($where))
 					$where	 = array_merge(array('channel_data.channel_id' => $channel_id), $where);
@@ -827,20 +840,18 @@ if(!class_exists('Channel_data_lib'))
 			if($this->is_polymorphic($select))
 			{
 				$subject = $select;
+				unset($select);
 				
-				$keywords = array('select', 'where', 'order_by', 'sort', 'limit', 'offset');
+				$keywords = array('where', 'order_by', 'sort', 'limit', 'offset');
 				
 				foreach($keywords as $keyword)
-				{
 					$$keyword = isset($subject[$keyword]) ? $subject[$keyword] : $$keyword;
-				}
 				
-				if(isset($select['select']))
-					$select = $select['select'];
+				if(isset($subject['select']))
+					$select = $subject['select'];
 				else
 					if(!isset($select))
-						$select = array('*');
-						
+						$select = array('*');	
 			}
 			
 			$params	= array(
@@ -851,16 +862,7 @@ if(!class_exists('Channel_data_lib'))
 				'limit'		=> $limit,
 				'offset'	=> $offset
 			);
-			
-			/*
-			foreach($this->reserved_terms as $term)
-			{
-				if(is_array($select) && isset($select[$term]))
-					$params[$term] = $select[$term];
-			}	
-			*/
-				
-			
+					
 			foreach($this->reserved_terms as $term)
 			{
 				if(isset($params[$term]) && $params[$term] !== FALSE)
@@ -896,11 +898,23 @@ if(!class_exists('Channel_data_lib'))
 								
 									$concat = ' AND ';
 									
-									if(strpos($field, 'or') !== FALSE)
+									/*
+									if($where_field == 'or author_idz')
+									{
+										echo 'match: ';
+										var_dump(preg_match("/^or.+/", $where_field));
+										exit();
+									
+									}
+									*/
+									
+									if(preg_match("/^or.+/", $where_field))
 									{			
 										unset($params['where'][$field]);
 											
-										$where_field 	= trim(str_replace('or', '', $field));
+										//$where_field 	=  preg_replace("/^or.+/", "", $field);
+										
+										$where_field 	= trim(str_replace("or ", '', $field));
 										$concat 		= ' OR ';									
 									}
 									

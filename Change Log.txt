@@ -7,6 +7,7 @@
 * http://objectivehtml.com
 */
 
+Changed the api slightly. get_channel_fields($group_id) has been changed more appropriately to get_channel_fields($channel_id). The get_channel_fields($group_id) more closely imitated the first part API which are the roots of the Channel Data api. Since the first party dependencies have been eliminated, this API change was necessary to move forward.
 Version 0.4.2 - 12/14/2011
 --------------------------
 Paying a lot of attention to the polymorphic parameters and removing any bugs I can find. Also added complex conditionals and added "AND/OR" clauses to WHERE statements.
