@@ -1,13 +1,24 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.4.2
-* Build: 20111214
+* Version: 0.5.1
+* Build: 20111218
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
 
+Version 0.5.1 - 12/18/2011
+--------------------------
+Fixed a bug that caused field names with "or" in them - like "author_id" - to improperly get replaced.
+
+Version 0.5.0 - 12/17/2011
+--------------------------
 Changed the api slightly. get_channel_fields($group_id) has been changed more appropriately to get_channel_fields($channel_id). The get_channel_fields($group_id) more closely imitated the first part API which are the roots of the Channel Data api. Since the first party dependencies have been eliminated, this API change was necessary to move forward.
+
+Version 0.4.3 - 12/15/2011
+--------------------------
+Bug fixed that cased SELECT parameter to create invalid queries in the event the user didn't define a SELECT parameter.
+
 Version 0.4.2 - 12/14/2011
 --------------------------
 Paying a lot of attention to the polymorphic parameters and removing any bugs I can find. Also added complex conditionals and added "AND/OR" clauses to WHERE statements.
