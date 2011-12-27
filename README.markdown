@@ -1,7 +1,7 @@
 Channel Data
 ============
 
-### Version 0.5.1 - 20111219
+### Version 0.5.3 - 20111227
 
 #### By Justin Kimbrell / Objective HTML
 

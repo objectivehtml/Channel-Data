@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.5.1
- * @build		20111217
+ * @version		0.5.3
+ * @build		20111227
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -215,6 +215,25 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
+		 * Get category groups using on a series of polymorphic parameters 
+		 * that returns an active record object.
+		 * 
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_category_by_group($group_id, $select = array('*'))
+		{
+			return $this->get_categories($select, array('group_id' => $group_id));
+		}
+		
+		/**
 		 * Get category groups by using on a series of polymorphic parameters 
 		 * that returns an active record object.
 		 * 
@@ -267,6 +286,47 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
+		 * Get category groups by using on a series of polymorphic parameters 
+		 * that returns an active record object.
+		 * 
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		
+		public function get_channel_categories($channel_id, $select = array(), $where = array(), $order_by = 'group_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{			
+			$channel 	= $this->get_channel($channel_id);
+			$new_where 	= array('group_id' => $channel->row('cat_group'));
+			
+			if($this->is_polymorphic($select))
+			{
+				if(!isset($select['where']))
+				{
+					$select['where'] = array();
+				}
+								
+				$select['where'] = array_merge($select['where'], $new_where);
+			}
+			else
+			{
+				if(!is_array($where))
+				{
+					$where = array();
+				}
+				
+				$where = array_merge($where, $new_where);
+			}
+						
+			return $this->get('categories', $select, $where, $order_by, $sort, $limit, $offset);
+		}
+		
+		/**
 		 * Gets a channel by passing a channel_id
 		 *
 		 * @access	public
@@ -274,7 +334,7 @@ if(!class_exists('Channel_data_lib'))
 		 * @param	mixed
 		 * @return	object
 		 */
-		 
+		
 		public function get_channel($channel_id, $select = array('*'))
 		{
 			return $this->get_channels($select, array('channel_id' => $channel_id));
@@ -350,8 +410,12 @@ if(!class_exists('Channel_data_lib'))
 			if($channel_id !== FALSE)
 			{
 				$channel = $this->get_channel($channel_id)->row();
-				$group_id = array('group_id' => $channel->field_group);
-				$where = array_merge($where, $group_id);
+				
+				if(isset($channel->field_group))
+				{				
+					$group_id = array('group_id' => $channel->field_group);
+					$where = array_merge($where, $group_id);
+				}
 			}
 				
 			return $this->get('channel_fields', $select, $where, $order_by, $sort, $limit, $offset);
@@ -724,6 +788,19 @@ if(!class_exists('Channel_data_lib'))
 			));
 		}
 		
+		/**
+		 * Gets related parent entries (ALIAS)
+		 * 
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
 		public function get_related_parent_entries($entry_id, $select = '*') 
 		{
 			return $this->get_related_entries($entry_id, $select);
@@ -744,6 +821,20 @@ if(!class_exists('Channel_data_lib'))
 				'group_id' => $group_id
 			));
 		}
+		
+		/**
+		 * Gets channel entries using a series of polymorphic parameters
+		 * that returns an active record object.
+		 * 
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
 		
 		public function get_status_groups($select = array(), $where = array(), $order_by = 'group_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{
@@ -767,10 +858,15 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Get statuses by passing a group_id
-		 *
+		 * Get statuses by passing a group id.
+		 * Polymorphic parameters are permitted in select arg.
+		 * 
 		 * @access	public
-		 * @param	int
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
 		 * @param	mixed
 		 * @return	object
 		 */
@@ -782,6 +878,19 @@ if(!class_exists('Channel_data_lib'))
 			)), $order_by, $sort, $limit, $offset);
 		}
 		
+		/**
+		 * Gets status using the standard polymorphic parameters
+		 *
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
 		public function get_statuses($select = array(), $where = array(), $order_by = 'status_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{
 			return $this->get('statuses', $select, $where, $order_by, $sort, $limit, $offset);

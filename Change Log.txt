@@ -1,11 +1,19 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.5.1
-* Build: 20111218
+* Version: 0.5.3
+* Build: 20111227
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.5.3 - 12/27/2011
+--------------------------
+Added new convenience method
+
+Version 0.5.2 - 12/25/2011
+--------------------------
+Added new convenience method
 
 Version 0.5.1 - 12/18/2011
 --------------------------
