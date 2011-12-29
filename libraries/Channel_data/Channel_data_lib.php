@@ -312,7 +312,7 @@ if(!class_exists('Channel_data_lib'))
 			
 			if($this->is_polymorphic($select))
 			{
-				ifspecifying
+				if(!isset($select['where']))
 				{
 					$select['where'] = array();
 				}
@@ -1030,26 +1030,7 @@ if(!class_exists('Channel_data_lib'))
 				)
 			));
 		}
-		
-		/**
-		 * Get a single member field by specifying a field_name
-		 *
-		 * @access	public
-		 * @param	int
-		 * @param	mixed
-		 * @return	object
-		 */
-		 
-		public function get_member_field_by_name($field_name, $select = array('*'))
-		{
-			return $this->get_member_fields(array(
-				'select' 	=> $select,
-				'where'		=> array(
-					'm_field_name' => $field_name
-				)
-			));
-		}
-		
+				
 		/**
 		 * Get a single relationship by specifying an relationship id
 		 *
