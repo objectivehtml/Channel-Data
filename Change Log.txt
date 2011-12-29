@@ -1,11 +1,19 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.5.3
-* Build: 20111227
+* Version: 0.6.0
+* Build: 20111228
 * Copyright 2011 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.6.0 - 12/28/2011
+--------------------------
+Just added get_members(), get_member(), get_member_fields(), get_member_field(), get_member_field_by_name(), get_member_groups(), get_member_group(), get_member_group_by_title(). Member queries are joined with the custom member fields just like the get_channel_entries() method.
+
+Version 0.5.4 - 12/28/2011
+--------------------------
+Added another convenience method, get_channel_statuses(). I tried to ensure all get_channel_xxxxx($channel_id) methods are consistent, as grabbing data in relation to a channel_id is extremely common. Also updated the documentation slightly.
 
 Version 0.5.3 - 12/27/2011
 --------------------------

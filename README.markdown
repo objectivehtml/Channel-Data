@@ -1,7 +1,7 @@
 Channel Data
 ============
 
-### Version 0.5.3 - 20111227
+### Version 0.6.0 - 20111228
 
 #### By Justin Kimbrell / Objective HTML
 
@@ -25,9 +25,9 @@ Table of Contents
 Basic Usage
 -----------
 
-Channel Data is a modified CodeIgniter driver and has two parts to its API, the library, and the add-on API framework. The library provides all the methods to easily retrieve data from your channels using a familiar polymorphic syntax. The add-on API framework allows you load third-party add-on API's. It can also help you create an API for your add-ons that other developers can use.
+Channel Data is a modified CodeIgniter driver and has two parts to the architecture, the library, and the add-on API framework. The library potion attempts provides all the methods one would need to easily retrieve data from your channels using a familiar polymorphic syntax. Native libraries are inconstant in nomenclature, are undocumented, and usually don't even do what you need without loading 4 or 5 models and writing 20 or 30 lines of code. It gets tedious and time consuming after a while, and the code looks like a mess. The Channel Library provides a clean and flexible API that is capable of performing complex queries, and is very easy to remember. The nomenclature is logical and makes send. For example, get_channel_entries($channel_id, …) actually gets the channel entries AND joins the custom fields in one nice easy to remember method. 
 
-So, when you load Channel Data by default, you inherently gain access to the library. To gain access to third-party API's, you must load them as a driver. API's are files inside the parent add-on directory with the naming scheme: __api.your_module_name.php__. Once the driver is loaded, it becomes a child to the Channel Data object.
+The add-on API framework allows you load third-party add-on API's. It can also help you create an API for your add-ons that other developers can use. The add-on API framework extends the Channel Data Library, so you inherently get access to all the library functions within you API. Since Channel Data is a modified CodeIgniter driver, to get access to third-party API's you must load them as such. API's are files inside the parent add-on directory with the naming scheme: __api.your_module_name.php__. Once the driver is loaded, it becomes a child to the Channel Data object.
 
 #### Example A - Using the Channel Data Library
 
@@ -71,7 +71,9 @@ _By extending the Base_API class, you inherent the Channel Data object. Now, fin
 Polymorphic Parameters
 ----------------------
 
-Almost all of the methods have polymorphic parameters. Helper methods are used to quickly retrieve a single entry _do not_ use polymorphic parameters. The first parameter in each polymorphic method can be use it to select fields in a query, or you can define an active record array. It's really just a preference, there are reasons to use both, but really it just makes for a really versatile and functional API and more memorable.
+Almost all of the methods have polymorphic parameters. Helper methods are used to quickly retrieve a single entry _do not_ use polymorphic parameters. However, helper methods than quickly grab data in relation to a channel_id generally do accept polymorphic parameters.
+
+Unless the method only returns a single row, the select parameter is always used for polymorphic values. In these polymorphic parameters, you can either fields to select, or you can define an active record array. It's really just a preference, there are reasons to use both, but really it just makes for a really versatile and functional API and more memorable. Complex queries are generally a lot easier to comprehend when using polymorphic parameters.
 
 #### Example A
 	
@@ -97,8 +99,21 @@ _This example uses the standard parameters are select, where, order_by, sort, li
 		'limit'		=> 1,
 		'offset'	=> 5
 	));
+	
+	$entries = $this->EE->channel_data->get_entries($channel_id, array(
+		'select'	=> array('*'),
+		'where'		=> array(
+			'channel_data.entry_id >' 	 => 5,
+			'channel_data.channel_id !=' => 4,
+			'or channel_data.entry_id'   => 1
+		),
+		'order_by'	=> 'title',
+		'sort'		=> 'ASC',
+		'limit'		=> 1,
+		'offset'	=> 5
+	));
 
-_Or... You can use the alternative syntax. This array is referred to an active record array._
+_Or... You can use the alternative syntax. This array is referred to an active record array. Notice you can use OR and AND prefixes and logical operators as the suffix. If not logical operator exists, then '=' is assumed._
 
 #### Examples C
 	
@@ -121,16 +136,17 @@ _Or... You can use the alternative syntax. This array is referred to an active r
 	  NULL
 	}
 
-_The returned object would look something like, or an active record object…_
+_The returned object would look something like this, also known as an active record object…_
 
 [Back to Top](#channeldata "Go to the top of the page")
 
 Channel Data Library	
 --------------------
 
-I am currently working to fully document the source code and properly generate a dynamic documentation form the comments within the code. Until then, refer to __Channel_data_lib.php__ source code file to reference methods. I realize this is pretty terrible, but this stuff comes in phases… I will get the new docs created as soon as I learn the overly complicated systems that exist to create real documentation without re-typing everything 3 times.
+I am currently working to fully documenting the source code and properly generate a dynamic documentation form the comments within the code. Until then, refer to __Channel_data_lib.php__ source code file to reference methods. I realize this is pretty terrible, but this stuff comes in phases, and this is a free library built in conjunction with the projects I build for paying clients… I will get the new docs created as soon as I learn the overly complicated systems that exist to create real documentation without re-typing everything 3 times.
 
 [Back to Top](#channeldata "Go to the top of the page")
+
 
 What's to come?
 ---------------
@@ -138,6 +154,7 @@ What's to come?
 As the project start to mature, the main goal is get to people to start adopting this library and using to it to create rich third-party API's for their add-ons. API's are awesome and allow us all to make better products. If we can all make an effort to create add-ons with API's I bet we start to see even more cool things built.
 
 [Back to Top](#channeldata "Go to the top of the page")
+
 
 Contributors
 ------------
@@ -148,9 +165,14 @@ Using feedback from others is a critical part of success. Become a contributor b
 
 [Back to Top](#channeldata "Go to the top of the page")
 
+
 Disclaimer
 ----------
 
 This is library still very beta. If you have any complaints, dislikes, improvements, suggestions, or anything else, please feel free to fork the code or contact me directly. I want this to be a rock solid library, but it first needs to be scrutinized by the community. Contact me on Twitter @objectivehtml.
+
+License
+-------
+Channel Data is licensed using the BSD 2-Clause License. In a nutshell, do whatever you want with it so long as you leave the copyright information and don't take credit for my work. The idea is for everyone to benefit from the library. For a full copy of the license, refer to license.txt in the download package.
 
 [Back to Top](#channeldata "Go to the top of the page")

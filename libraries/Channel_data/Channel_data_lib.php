@@ -13,21 +13,27 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2011, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.5.3
- * @build		20111227
+ * @version		0.6.0
+ * @build		20111228
  */
 
 if(!class_exists('Channel_data_lib'))
 {
 	class Channel_data_lib {
 		
+		// A list of escaped conditional operators
+		
 		private $conditionals = array('\!\=', '\<\=', '\>\=', '\<', '\>', '\=');
+		
+		// A list of common ambitious fields
 		
 		private $ambigious_fields = array(
 			'entry_id',
 			'site_id',
 			'channel_id'
 		);
+		
+		// A list of the reserved SQL terms
 		
 		private $reserved_terms = array(
 			'select', 'like', 'or_like', 'or_where', 'where', 'where_in', 
@@ -110,7 +116,7 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Get a single category by passing a category id. 
+		 * Get a single category by specifying a category id. 
 		 *
 		 * @access	public
 		 * @param	int
@@ -143,7 +149,7 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Get category field by passing a field id.
+		 * Get category field by specifying a field id.
 		 *
 		 * @access	public
 		 * @param	int
@@ -306,7 +312,7 @@ if(!class_exists('Channel_data_lib'))
 			
 			if($this->is_polymorphic($select))
 			{
-				if(!isset($select['where']))
+				ifspecifying
 				{
 					$select['where'] = array();
 				}
@@ -327,7 +333,7 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Gets a channel by passing a channel_id
+		 * Gets a channel by specifying a channel_id
 		 *
 		 * @access	public
 		 * @param	int
@@ -360,7 +366,7 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Gets a channel by passing a channel_name
+		 * Gets a channel by specifying a channel_name
 		 *
 		 * @access	public
 		 * @param	string	A string containing a channel name
@@ -459,7 +465,7 @@ if(!class_exists('Channel_data_lib'))
 		}
 	 
 		/**
-		 * Get a custom field by passing a field_name.
+		 * Get a custom field by specifying a field_name.
 		 *
 		 * @access	public
 		 * @param	mixed
@@ -508,9 +514,42 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 		
-		public function get_channel_member_groups($select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		public function get_channel_member_groups($channel_id, $select = array(), $where = array(), $order_by = 'channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{			
 			return $this->get('channel_member_groups', $select, $where, $order_by, $sort, $limit, $offset);
+		}
+		
+		/**
+		 * Gets statuses by specifying a channel id. Polymorphic parameters are
+		 * still allowed.
+		 * 
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		
+		public function get_channel_statuses($channel_id, $select = array('*'), $where = array(), $order_by = 'status_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{
+			$channel = $this->get_channel($channel_id)->row();
+			
+			if(isset($channe->status_group))
+			{
+				if($this->is_polymorphic($select))
+				{
+					$select['where']['group_id'] = $channel->status_group;
+				}
+				else
+				{
+					$where['group_id'] = $channel->status_group;
+				}
+			}
+			
+			return $this->get('statuses', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
 		/**
@@ -603,7 +642,7 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Get a single entry passing an entry id
+		 * Get a single entry specifying an entry id
 		 *
 		 * @access	public
 		 * @param	int
@@ -630,7 +669,13 @@ if(!class_exists('Channel_data_lib'))
 		 * also accepted. The channel id is required.
 		 *
 		 * @access	public
-		 * @return	string
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
 		 */
 			
 		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0, $debug = FALSE)
@@ -718,7 +763,295 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Get a single relationship by passing an relationship id
+		 * Get a single member by specifying a member_id. The custom fields
+		 * are automatically joined in the query just like entries.
+		 *
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_member($member_id, $select = array('member_data.*', 'members.*'))
+		{
+			return $this->get_members(array(
+				'select' 	=> $select,
+				'where'		=> array(
+					'member_id' => $member_id
+				)
+			));
+		}
+			
+		/**
+		 * Get members using the standard polymorphic parameters. The custom
+		 * fields are automatically joined in the query just like entries. 
+		 *
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		 	
+		public function get_members($select = array('members.member_id', 'members.group_id', 'members.email', 'members.username', 'members.screen_name'), $where = array(), $order_by = 'member_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{		
+			
+			$fields 		= $this->get_member_fields()->result();
+			$field_array	= array();
+			$field_select 	= array();
+			
+			//Default fields to select
+						
+			$default_select = array('members.*');
+			
+			// If the parameter is polymorphic, then the variables are extracted
+			
+			if($this->is_polymorphic($select) && $polymorphic = $select)
+			{
+				extract($select);
+				
+				foreach($this->reserved_terms as $term)
+				{
+					if(!isset($polymorphic[$term]) && isset($$term) || isset($polymorphic[$term]))
+					{
+						if($term == 'select' && !isset($$term['select']))
+							$$term = $default_select;
+						else
+							$$term = isset($polymorphic[$term]) ? $polymorphic[$term] : $$term;
+						
+					}
+				}
+			}
+						
+			// Selects the appropriate field name and converts where converts
+			// where parameters to their corresponding m_field_id's
+			foreach($fields as $field)
+			{
+				if(is_array($select))
+					$select[] = 'm_field_id_'.$field->m_field_id.' as \''.$field->m_field_name.'\'';
+				
+				foreach($where as $index => $value)
+				{
+					$index = $this->check_ambiguity($index);
+										
+					if($field->m_field_name == $index)
+					{
+						unset($where[$index]);
+						$where['m_field_id_'.$field->m_field_id] = $value;
+					}
+				}		
+			}
+			
+			// Joins the channel_data table
+					
+			$this->EE->db->join('member_data', 'members.member_id = member_data.member_id');
+			
+			$params = array(
+				'select' 	=> $select,
+				'where' 	=> $where,
+				'order_by' 	=> $order_by,
+				'sort' 		=> $sort,
+				'limit' 	=> $limit,
+				'offset'	=> $offset
+			);
+			
+			// Converts the params into active record methods
+			
+			$this->convert_params($params, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE);
+			
+			return $this->EE->db->get('members');
+			
+			
+			foreach($fields as $field)
+			{
+				$field_array[$field->m_field_name] = $field;
+				$field_select[] = 'm_field_'.$field->m_field_id.' as \''.$field->m_field_name.'\'';
+			}
+			
+			if($this->is_polymorphic($select))
+			{
+				if(isset($select['select']))
+				{
+					$select_array = $select['select'];
+					
+					if(!is_array($select['select']))
+					{
+						$select_array = array($select['select']);
+					}
+					
+					$select['select'] = array_merge($select_array, $field_select);
+				}
+			}
+			else
+			{
+				if(!is_array($select))
+				{
+					$select = array($select);
+				}
+				
+				$select = array_merge($select, $field_select);
+			}			
+						
+			$this->EE->db->join('member_data', 'members.member_id = member_data.member_id');
+			
+			return $this->get('members', $select, $where, $order_by, $sort, $limit, $offset);
+		}
+		
+		/**
+		 * Get members directly using the standard polymorphic parameters.
+		 *
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_member_data($select = array(), $where = array(), $order_by = 'rel_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{
+			return $this->get('member_data', $select, $where, $order_by, $sort, $limit, $offset);
+		}
+		
+		/**
+		 * Get members fields using the standard polymorphic parameters.
+		 *
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_member_fields($select = array(), $where = array(), $order_by = 'm_field_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{
+			return $this->get('member_fields', $select, $where, $order_by, $sort, $limit, $offset);
+		}
+		
+		/**
+		 * Get a single member field by specifying a field_id
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_member_field($field_id, $select = array('*'))
+		{
+			return $this->get_member_fields(array(
+				'select' 	=> $select,
+				'where'		=> array(
+					'm_field_id' => $field_id
+				)
+			));
+		}
+		
+		/**
+		 * Get a single member field by specifying a field_name
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_member_field_by_name($field_name, $select = array('*'))
+		{
+			return $this->get_member_fields(array(
+				'select' 	=> $select,
+				'where'		=> array(
+					'm_field_name' => $field_name
+				)
+			));
+		}
+		
+		/**
+		 * Get member groups using the standard polymorphic parameters.
+		 *
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_member_groups($select = array(), $where = array(), $order_by = 'group_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{
+			return $this->get('member_groups', $select, $where, $order_by, $sort, $limit, $offset);
+		}
+		
+		/**
+		 * Get a member group by specifying a group_id
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_member_group($group_id, $select = array('*'))
+		{
+			return $this->get_member_groups(array(
+				'select' 	=> $select,
+				'where'		=> array(
+					'group_id' => $group_id
+				)
+			));
+		}
+		
+		/**
+		 * Get a member group by specifying a group_title
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_member_group_by_title($title, $select = array('*'))
+		{
+			return $this->get_member_groups(array(
+				'select' 	=> $select,
+				'where'		=> array(
+					'group_title' => $title
+				)
+			));
+		}
+		
+		/**
+		 * Get a single member field by specifying a field_name
+		 *
+		 * @access	public
+		 * @param	int
+		 * @param	mixed
+		 * @return	object
+		 */
+		 
+		public function get_member_field_by_name($field_name, $select = array('*'))
+		{
+			return $this->get_member_fields(array(
+				'select' 	=> $select,
+				'where'		=> array(
+					'm_field_name' => $field_name
+				)
+			));
+		}
+		
+		/**
+		 * Get a single relationship by specifying an relationship id
 		 *
 		 * @access	public
 		 * @param	int
@@ -751,7 +1084,7 @@ if(!class_exists('Channel_data_lib'))
 		}	
 		
 		/**
-		 * Get child relationships by passing an entry_id
+		 * Get child relationships by specifying an entry_id
 		 *
 		 * @access	public
 		 * @param	int
@@ -770,7 +1103,7 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Get parent relationships by passing an entry_id
+		 * Get parent relationships by specifying an entry_id
 		 *
 		 * @access	public
 		 * @param	int
@@ -789,14 +1122,10 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Gets related parent entries (ALIAS)
-		 * 
+		 * Get related parent entries by specifying an entry_id
+		 *
 		 * @access	public
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
+		 * @param	int
 		 * @param	mixed
 		 * @return	object
 		 */
@@ -807,7 +1136,7 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Get status group by passing a group_id
+		 * Get status group by specifying a group_id
 		 *
 		 * @access	public
 		 * @param	int
@@ -823,26 +1152,25 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Gets channel entries using a series of polymorphic parameters
-		 * that returns an active record object.
+		 * Get status groups the standard polymorphic parameters.
 		 * 
 		 * @access	public
 		 * @param	mixed
-		 * @param	mixed
+		 * @param	mixeds
 		 * @param	mixed
 		 * @param	mixed
 		 * @param	mixed
 		 * @param	mixed
 		 * @return	object
 		 */
-		
+		 
 		public function get_status_groups($select = array(), $where = array(), $order_by = 'group_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{
 			return $this->get('status_groups', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
 		/**
-		 * Get status by passing a status_id
+		 * Get status by specifying a status_id
 		 *
 		 * @access	public
 		 * @param	int
@@ -858,15 +1186,10 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Get statuses by passing a group id.
-		 * Polymorphic parameters are permitted in select arg.
-		 * 
+		 * Get statuses by specifying a group_id
+		 *
 		 * @access	public
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
-		 * @param	mixed
+		 * @param	int
 		 * @param	mixed
 		 * @return	object
 		 */
@@ -879,8 +1202,9 @@ if(!class_exists('Channel_data_lib'))
 		}
 		
 		/**
-		 * Gets status using the standard polymorphic parameters
-		 *
+		 * Get statuses by using on a series of polymorphic parameters 
+		 * that returns an active record object.
+		 * 
 		 * @access	public
 		 * @param	mixed
 		 * @param	mixed
@@ -896,14 +1220,22 @@ if(!class_exists('Channel_data_lib'))
 			return $this->get('statuses', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
-		
-		public function check_ambiguity($field, $debug = FALSE)
+		/**
+		 * Adds a set prefix to an ambigious database field
+		 * 
+		 * @access	public
+		 * @param	string	A database field name
+		 * @param	string	A prefix to add if the field is indeed ambiguous
+		 * @return	object
+		 */
+		 
+		public function check_ambiguity($field, $prefix = 'channel_titles')
 		{			
 			foreach($this->ambigious_fields as $fields)
 			{			
 				if(strpos($field, $fields) !== FALSE)
 				{
-					$field = 'channel_titles.'.$field;
+					$field = $prefix.$field;
 				}
 			}			
 			
@@ -1027,7 +1359,7 @@ if(!class_exists('Channel_data_lib'))
 										$concat 		= ' OR ';									
 									}
 									
-									$where_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field, $debug) . '\'' . $where_val . '\'';
+									$where_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field) . '\'' . $where_val . '\'';
 										
 								}
 							}
@@ -1071,6 +1403,14 @@ if(!class_exists('Channel_data_lib'))
 			return $params;		
 		}
 		
+		/**
+		 * Strips conditionals from a string
+		 * 
+		 * @access	public
+		 * @param	string
+		 * @return	object
+		 */
+		
 		public function remove_conditionals($subject)
 		{		
 			foreach($this->conditionals as $condition)
@@ -1082,7 +1422,15 @@ if(!class_exists('Channel_data_lib'))
 			return $subject;
 		}
 		
-		public function assign_conditional($str, $debug = FALSE)
+		/**
+		 * Assign a conditional based on the presence of a logical operator
+		 * 
+		 * @access	public
+		 * @param	string
+		 * @return	object
+		 */
+		
+		public function assign_conditional($str)
 		{
 			$conditionals 	= $this->conditionals;
 			$match			= FALSE;
