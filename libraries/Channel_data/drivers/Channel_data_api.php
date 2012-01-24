@@ -10,10 +10,10 @@
  * @subpackage	Libraries
  * @category	Class
  * @author		Justin Kimbrell
- * @copyright	Copyright (c) 2011, Justin Kimbrell
+ * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.0
- * @build		20111228
+ * @version		0.6.2
+ * @build		20120115
  */
  
 abstract class Base_API extends Channel_data {
