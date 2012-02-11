@@ -13,7 +13,7 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.4
+ * @version		0.6.5
  * @build		20120211
  */
 
@@ -756,12 +756,12 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 			
-		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0, $debug = FALSE)
+		public function get_channel_entries($channel_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0, $debug = FALSE)
 		{		
 		
 			//Default fields to select
 						
-			$default_select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status');
+			$default_select = $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status');
 			
 			// If the parameter is polymorphic, then the variables are extracted
 			
@@ -1286,6 +1286,31 @@ if(!class_exists('Channel_data_lib'))
 		{
 			return $this->get('statuses', $select, $where, $order_by, $sort, $limit, $offset);
 		}
+				
+		/**
+		 * Return TRUE if category is a parent.
+		 *
+		 * @access	public
+		 * @param	int		Category id
+		 * @return  bool
+		 */
+		 
+		public function is_parent_category($cat_id)
+		{
+			$category = $this->get_category($cat_id);
+			
+			if($category->num_rows() == 0)
+			{
+				return FALSE;
+			}
+			
+			if($category->row('parent_id') == 0)
+			{
+				return TRUE;
+			}
+			
+			return FALSE;
+		}
 		
 		/**
 		 * Adds a set prefix to an ambigious database field
@@ -1370,7 +1395,7 @@ if(!class_exists('Channel_data_lib'))
 				'limit'		=> $limit,
 				'offset'	=> $offset
 			);
-					
+			
 			foreach($this->reserved_terms as $term)
 			{
 				if(isset($params[$term]) && $params[$term] !== FALSE)
@@ -1384,12 +1409,14 @@ if(!class_exists('Channel_data_lib'))
 							if(!is_array($param))
 								$param = array($param); 
 							
+												
 							foreach($param as $select)
 							{
 								//$select = $this->check_ambiguity($select);
 								
 								$this->EE->db->select($select);
 							}
+							
 							
 							break;
 							
@@ -1423,7 +1450,7 @@ if(!class_exists('Channel_data_lib'))
 							 
 							$sql = trim(implode(' ', $where_sql));			
 							$sql = trim(ltrim(ltrim($sql, 'AND'), 'OR'));
-										
+							
 							if(!empty($sql)) $this->EE->db->where($sql, FALSE, FALSE);
 							
 							break;

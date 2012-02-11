@@ -1,11 +1,19 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.6.2
+* Version: 0.6.5
 * Build: 20120125
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.6.5 - 2/11/2012
+-------------------------
+Bug fix with get_channel_entries() method. Added new utility driver with add_prefix() method.
+
+Version 0.6.4 - 2/11/2012
+-------------------------
+Bug fixes.
 
 Version 0.6.3 - 1/25/2012
 -------------------------

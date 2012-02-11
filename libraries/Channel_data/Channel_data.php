@@ -31,7 +31,7 @@ if(!class_exists('Channel_data'))
 		
 		// Available Drivers
 			
-		public $drivers = array('channel_data_api');	
+		public $drivers = array('channel_data_api', 'channel_data_utility');	
 		public $debug	= FALSE;
 		
 		/**
