@@ -2,10 +2,14 @@
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
 * Version: 0.6.2
-* Build: 20120115
+* Build: 20120125
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.6.3 - 1/25/2012
+-------------------------
+Fixed an issue with LIKE searches not working correctly.
 
 Version 0.6.2 - 1/15/2012
 -------------------------

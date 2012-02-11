@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.2
- * @build		20120115
+ * @version		0.6.4
+ * @build		20120211
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -23,7 +23,7 @@ if(!class_exists('Channel_data_lib'))
 		
 		// A list of escaped conditional operators
 		
-		private $conditionals = array('\!\=', '\<\=', '\>\=', '\<', '\>', '\=');
+		private $conditionals = array('\!\=', '\<\=', '\>\=', '\<', '\>', '\=', 'like', 'LIKE');
 		
 		// A list of common ambitious fields
 		
@@ -1415,7 +1415,7 @@ if(!class_exists('Channel_data_lib'))
 										$where_field 	= trim(str_replace("or ", '', $field));
 										$concat 		= ' OR ';									
 									}
-									
+																		
 									$where_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field) . '\'' . $where_val . '\'';
 										
 								}
@@ -1500,10 +1500,11 @@ if(!class_exists('Channel_data_lib'))
 				{
 					$match = TRUE;
 					$return = $condition;
+					
 					break;
 				}
 			}		
-		
+					
 			if(!$match) $return = $conditionals[count($conditionals) - 1];
 					
 			return ' '.str_replace('\\', '', $return).' ';
