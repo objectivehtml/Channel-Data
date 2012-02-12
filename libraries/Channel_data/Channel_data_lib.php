@@ -756,15 +756,13 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 			
-		public function get_channel_entries($channel_id, $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status'), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0, $debug = FALSE)
+		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0, $debug = FALSE)
 		{		
-		
 			//Default fields to select
 						
-			$default_select = $select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status');
-			
+			$default_select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status');
 			// If the parameter is polymorphic, then the variables are extracted
-			
+		
 			if($this->is_polymorphic($select) && $polymorphic = $select)
 			{
 				extract($select);
@@ -777,9 +775,13 @@ if(!class_exists('Channel_data_lib'))
 							$$term = $default_select;
 						else
 							$$term = isset($polymorphic[$term]) ? $polymorphic[$term] : $$term;
-						
 					}
 				}
+			}
+			
+			if(count($select) == 0)
+			{
+				$select = $default_select;
 			}
 			
 			// If the channel_id is not false then only the specified channel fields are
