@@ -10,8 +10,8 @@
  * @category	Drivers
  * @author		Justin Kimbrell
  * @link		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.5
- * @build		20120211
+ * @version		0.6.7
+ * @build		20120228
  */
  
 class Channel_data_utility {
@@ -30,25 +30,32 @@ class Channel_data_utility {
 	 {
 	 	$new_data = array();
 	 	
-	 	foreach($data as $data_index => $data_value)
+	 	if(!empty($prefix))
 	 	{
-	 		if(is_array($data_value))
-	 		{
-	 			$new_row = array();
-	 			
-	 			foreach($data_value as $inner_index => $inner_value)
-	 			{
-	 				$new_row[$prefix . $delimeter . $inner_index] = $inner_value;
-	 			}
-	 			
-	 			$new_data[$data_index] = $new_row;
-	 		}
-	 		else
-	 		{
-	 			$new_data[$prefix . $delimeter . $data_index] = $data_value;
-	 		}
+		 	foreach($data as $data_index => $data_value)
+		 	{
+		 		if(is_array($data_value))
+		 		{
+		 			$new_row = array();
+		 			
+		 			foreach($data_value as $inner_index => $inner_value)
+		 			{
+		 				$new_row[$prefix . $delimeter . $inner_index] = $inner_value;
+		 			}
+		 			
+		 			$new_data[$data_index] = $new_row;
+		 		}
+		 		else
+		 		{
+		 			$new_data[$prefix . $delimeter . $data_index] = $data_value;
+		 		}
+		 	}
+	 	}
+	 	else
+	 	{
+	 		$new_data = $data;
 	 	}
 	 	
-	 	return $data;	
+	 	return $new_data;	
 	 }	
 }

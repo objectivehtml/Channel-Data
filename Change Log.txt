@@ -1,11 +1,19 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.6.5
-* Build: 20120125
+* Version: 0.6.7
+* Build: 20120228
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.6.7 - 2/28/2012
+-------------------------
+Fixed an issue with polymorphic parameters not searching arguments in the correct order. Also added ability to search same parameter in associative array by added an index.
+
+Version 0.6.6 - 2/24/2012
+-------------------------
+Fixed an issue with the add_prefix() method that prevents it from working correctly if the prefix was NULL.
 
 Version 0.6.5 - 2/11/2012
 -------------------------
