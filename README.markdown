@@ -91,7 +91,7 @@ _This example uses the standard parameters are select, where, order_by, sort, li
 
 #### Example B
 
-	$entries = $this->EE->channel_data->get_entries($channel_id, array(
+	$entries = $this->EE->channel_data->get_channel_entries($channel_id, array(
 		'select'	=> array('*'),
 		'where'		=> array('channel_data.entry_id >' => 5),
 		'order_by'	=> 'title',
@@ -100,7 +100,7 @@ _This example uses the standard parameters are select, where, order_by, sort, li
 		'offset'	=> 5
 	));
 	
-	$entries = $this->EE->channel_data->get_entries($channel_id, array(
+	$entries = $this->EE->channel_data->get_channel_entries($channel_id, array(
 		'select'	=> array('*'),
 		'where'		=> array(
 			'channel_data.entry_id >' 	 => 5,
