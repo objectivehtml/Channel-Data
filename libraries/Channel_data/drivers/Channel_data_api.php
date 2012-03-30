@@ -12,8 +12,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.7
- * @build		20120228
+ * @version		0.6.8
+ * @build		20120330
  */
  
 abstract class Base_API extends Channel_data {
@@ -34,8 +34,8 @@ abstract class Base_API extends Channel_data {
  * @category	Drivers
  * @author		Justin Kimbrell
  * @link		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.5
- * @build		20120211
+ * @version		0.6.8
+ * @build		20120330
  */
 
 class Channel_data_api {

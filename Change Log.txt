@@ -1,118 +1,152 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.6.7
-* Build: 20120228
+* Version: 0.6.8
+* Build: 20120330
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.6.8 - 03/30/2012
+-------------------------
+- HAVING clauses now have all the same capabilities as WHERE clauses.
+- Added a new method to the utility classes that merges two results_arrays into one array ready for template parsing.
+
 
 Version 0.6.7 - 2/28/2012
 -------------------------
 Fixed an issue with polymorphic parameters not searching arguments in the correct order. Also added ability to search same parameter in associative array by added an index.
 
+
 Version 0.6.6 - 2/24/2012
 -------------------------
 Fixed an issue with the add_prefix() method that prevents it from working correctly if the prefix was NULL.
+
 
 Version 0.6.5 - 2/11/2012
 -------------------------
 Bug fix with get_channel_entries() method. Added new utility driver with add_prefix() method.
 
+
 Version 0.6.4 - 2/11/2012
 -------------------------
 Bug fixes.
+
 
 Version 0.6.3 - 1/25/2012
 -------------------------
 Fixed an issue with LIKE searches not working correctly.
 
+
 Version 0.6.2 - 1/15/2012
 -------------------------
 Added two new methods: get_field_group, get_fields_groups()
+
 
 Version 0.6.1 - 12/30/2011
 --------------------------
 Added a get_fields_by_group() convenience method. Fixed a couple API inconsistencies with methods nothing properly using polymorphism. Fixed an ambiguity error in the new get_members() method.
 
+
 Version 0.6.0 - 12/28/2011
 --------------------------
 Just added get_members(), get_member(), get_member_fields(), get_member_field(), get_member_field_by_name(), get_member_groups(), get_member_group(), get_member_group_by_title(). Member queries are joined with the custom member fields just like the get_channel_entries() method.
+
 
 Version 0.5.4 - 12/28/2011
 --------------------------
 Added another convenience method, get_channel_statuses(). I tried to ensure all get_channel_xxxxx($channel_id) methods are consistent, as grabbing data in relation to a channel_id is extremely common. Also updated the documentation slightly.
 
+
 Version 0.5.3 - 12/27/2011
 --------------------------
 Added new convenience method
+
 
 Version 0.5.2 - 12/25/2011
 --------------------------
 Added new convenience method
 
+
 Version 0.5.1 - 12/18/2011
 --------------------------
 Fixed a bug that caused field names with "or" in them - like "author_id" - to improperly get replaced.
+
 
 Version 0.5.0 - 12/17/2011
 --------------------------
 Changed the api slightly. get_channel_fields($group_id) has been changed more appropriately to get_channel_fields($channel_id). The get_channel_fields($group_id) more closely imitated the first part API which are the roots of the Channel Data api. Since the first party dependencies have been eliminated, this API change was necessary to move forward.
 
+
 Version 0.4.3 - 12/15/2011
 --------------------------
 Bug fixed that cased SELECT parameter to create invalid queries in the event the user didn't define a SELECT parameter.
+
 
 Version 0.4.2 - 12/14/2011
 --------------------------
 Paying a lot of attention to the polymorphic parameters and removing any bugs I can find. Also added complex conditionals and added "AND/OR" clauses to WHERE statements.
 
+
 Version 0.4.1 - 12/13/2011
 --------------------------
 Rewrote the logic behind the where conditional element and how it's passed to Active Record. Fixed bugs that prevented OR and AND clauses from working correctly.
+
 
 Version 0.4.0 - 12/09/2011
 --------------------------
 Officially appended a BSD license to the library making it free and open to use for the life of the project.
 
+
 Version 0.3.7 - 12/08/2011
 --------------------------
 Bug fixed that prevented the polymorphic parameters from working when the select and where parameters aren't present.
+
 
 Version 0.3.6 - 12/08/2011
 --------------------------
 Added two new methods: get_actions() and get_action_id() to quickly get one or more action ids.
 
+
 Version 0.3.5 - 11/30/2011
 --------------------------
 Lots of bug fixes and code optimization. Stable release 1.0 release is starting to take shape. No major API changes for a while, and doesn't appear to need any. Every method has been tested at least once, but bugs could still be present.
+
 
 Version 0.3.4 - 11/15/2011
 --------------------------
 Bug fixes
 
+
 Version 0.3.3 - 11/11/2011
 --------------------------
 Bug fixed that prevented the get_channel_entry() method from working correctly
+
 
 Version 0.3.2 - 11/08/2011
 --------------------------
 Bug fixes within some of the polymorphic properties
 
+
 Version 0.3.1 - 11/07/2011
 --------------------------
 Added a new method: get_channel_by_name(). I got tired of typing a long syntax for something I wanted to very frequently. Also updated the documentation, hopefully it's a litter easier to read.
+
 
 Version 0.3.0 - 11/02/2011
 -------------------------
 Changed the library significantly yet again in favor of a more modular approach based on CodeIgniter's driver object/class schema. 
 
+
 This also made some headway to implement a Third Party API framework. Developers can now add an API that is easily distinguishable and manageable. This API is designed to interact directly with modules programmatically.
+
 
 Version 0.2.0 - 10/25/2011
 --------------------------
 Completely rewrote the Channel Data API in favor a more polymorphic solution. The original API has been deprecated. This project is still clearly very beta.
 
+
 Version 0.1.0 - 10/07/2011
 --------------------------
 Initial beta release. Here goes nothing...
+

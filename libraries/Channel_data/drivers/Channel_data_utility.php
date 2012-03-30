@@ -10,8 +10,8 @@
  * @category	Drivers
  * @author		Justin Kimbrell
  * @link		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.7
- * @build		20120228
+ * @version		0.6.8
+ * @build		20120330
  */
  
 class Channel_data_utility {
@@ -57,5 +57,38 @@ class Channel_data_utility {
 	 	}
 	 	
 	 	return $new_data;	
-	 }	
+	 }
+
+	/**
+	 * Merge an array to any nested array. Useful for merging data into arrays
+	 * before they are used to parse the templates.
+	 *
+	 * @access	public
+	 * @param	array	The array to merge
+	 * @param	array	The subject and data to be returned
+	 * @param	string	The starting point
+	 * @param	string	The ending point
+	 * @return	array
+	 */
+	 public function merge_array($array, $subject, $start = 0, $stop = FALSE)
+	 {
+	 	if($stop === FALSE)
+	 	{
+	 		$stop = count($subject);
+	 	}
+
+	 	for($y=$start; $y < $stop; $y++)
+	 	{
+	 		if(isset($subject[$y]))
+	 		{
+	 			$subject[$y] = array_merge($subject[$y], $array);
+	 		}
+	 		else
+	 		{	
+	 			$subject[$y] = $array;
+	 		}
+	 	}
+
+	 	return $subject;
+	 }
 }

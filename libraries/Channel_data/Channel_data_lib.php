@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.7
- * @build		20120228
+ * @version		0.6.8
+ * @build		20120330
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -755,7 +755,7 @@ if(!class_exists('Channel_data_lib'))
 		 * @param	mixed
 		 * @return	object
 		 */	
-		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0, $debug = FALSE)
+		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0, $debug = TRUE)
 		{		
 		
 			$default_select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status');							
@@ -1459,7 +1459,7 @@ if(!class_exists('Channel_data_lib'))
 												
 							foreach($param as $field => $value)
 							{		
-								$field = preg_replace('/\{+\d+\}/', '', $field);						
+								$field = preg_replace('/\{+\d+\}/', '', $field);			
 								if(!is_array($value)) $value = array($value);
 								
 								foreach($value as $where_val)
@@ -1532,10 +1532,38 @@ if(!class_exists('Channel_data_lib'))
 						
 							if(is_array($param))
 							{
+								$having_sql = array();
+
 								foreach($param as $field => $value)
 								{
-									$this->EE->db->having($field, $value);
+									$field = preg_replace('/\{+\d+\}/', '', $field);			
+									if(!is_array($value)) $value = array($value);
+									
+									foreach($value as $where_val)
+									{
+										$where_field = trim($field);
+									
+										$concat = ' AND ';
+										
+										if(preg_match("/(^or.+)|(^OR.+)/", $where_field))
+										{			
+											unset($params['where'][$field]);
+												
+											//$where_field 	=  preg_replace("/^or.+/", "", $field);
+											
+											$where_field 	= trim(str_replace(array("or ", "OR "), '', $field));
+											$concat 		= ' OR ';									
+										}
+																						
+										$having_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field) . '\'' . $where_val . '\'';
+											
+									}
 								}
+								
+								$sql = trim(implode(' ', $having_sql));			
+								$sql = trim(ltrim(ltrim($sql, 'AND'), 'OR'));
+							
+								if(!empty($sql)) $this->EE->db->having($sql, FALSE, FALSE);
 							}
 							
 							break;
