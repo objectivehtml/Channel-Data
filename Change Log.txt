@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.6.8
-* Build: 20120330
+* Version: 0.6.9
+* Build: 20120405
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.6.9 - 04/05/2012
+-------------------------
+- Fixed a pretty critical bug that prevented multiple WHERE clauses from working in the get_channel_entries method.
 
 Version 0.6.8 - 03/30/2012
 -------------------------
