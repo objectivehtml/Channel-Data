@@ -15,13 +15,15 @@
  * ExpressionEngine handles loading drivers.
  *
  * @package		Channel Data
+ * @subpackage	Libraries
  * @category	Library
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.8
- * @build		20120330
+ * @version		0.6.9
+ * @build		20120405
  */
+
 
 include_once('Channel_data_lib.php');
 

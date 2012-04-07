@@ -7,11 +7,12 @@
  *
  * @package		Channel Data
  * @subpackage	Libraries
- * @category	Drivers
+ * @category	Library
  * @author		Justin Kimbrell
- * @link		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.8
- * @build		20120330
+ * @copyright	Copyright (c) 2012, Justin Kimbrell
+ * @link 		http://www.objectivehtml.com/libraries/channel_data
+ * @version		0.6.9
+ * @build		20120405
  */
  
 class Channel_data_utility {

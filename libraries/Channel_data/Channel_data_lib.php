@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.8
- * @build		20120330
+ * @version		0.6.9
+ * @build		20120405
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -755,7 +755,7 @@ if(!class_exists('Channel_data_lib'))
 		 * @param	mixed
 		 * @return	object
 		 */	
-		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0, $debug = TRUE)
+		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0, $debug = FALSE)
 		{		
 		
 			$default_select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status');							
@@ -808,10 +808,16 @@ if(!class_exists('Channel_data_lib'))
 					
 			// Selects the appropriate field name and converts where converts
 			// where parameters to their corresponding field_id's
+			$field_array = array();
+
 			foreach($fields as $field)
 			{
 				if(is_array($select))
+				{
 					$select[] = 'field_id_'.$field->field_id.' as \''.$field->field_name.'\'';
+				}
+
+				$field_array[$field->field_name] = $field;
 			}
 				
 			$where_array = array();
@@ -819,19 +825,23 @@ if(!class_exists('Channel_data_lib'))
 			foreach($where as $index => $value)
 			{
 				$where_index = $this->check_ambiguity($index);
-								
-				if($field->field_name == $index)
+				
+				if(isset($field_array[$where_index]))
 				{
 					unset($where_array[$where_index]);
-					$where_array['field_id_'.$field->field_id] = $value;
+					$where_array['field_id_'.$field_array[$where_index]->field_id] = $value;
 				}
 				else
 				{
+					if($debug)
+					{
+						$debug_where[$index] = $field->field_name;
+					}
 					//var_dump($where_index);echo '<br><br>';
 					$where_array[$index] = $value;
 				}
 			}	
-					
+
 			$where = $where_array;
 			
 			// Joins the channel_data table
