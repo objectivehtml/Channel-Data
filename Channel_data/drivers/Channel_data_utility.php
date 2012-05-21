@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.9
- * @build		20120405
+ * @version		0.6.11
+ * @build		20120518
  */
  
 class Channel_data_utility {
@@ -92,4 +92,93 @@ class Channel_data_utility {
 
 	 	return $subject;
 	 }
+
+	/**
+	 * Prepare an entry to be added/edited using the channel entries API
+	 *
+	 * @access	public
+	 * @param	mixed	The channel id
+	 * @param	array	The entry data
+	 * @param	prefix  Delete a consistent prefix from entry data
+	 * @param	string	The ending point
+	 * @return	array
+	 */
+	public function prepare_entry($channel_id, $data, $prefix = '')
+	{
+		$fields = $this->EE->channel_data->get_channel_fields($channel_id);
+
+		$post   = array(
+			'title'           => $data->{($prefix.'title')},
+			'url_title'       => $data->{($prefix.'url_title')},
+			'entry_date'      => $data->{($prefix.'entry_date')},
+			'expiration_date' => $data->{($prefix.'expiration_date')},
+			'author_id'		  => $data->{($prefix.'author_id')},
+			'status'          => $data->{($prefix.'status')}
+		);
+
+		foreach($fields->result() as $field)
+		{
+			$post_value = $this->EE->input->post($field->field_name);
+
+			$post['field_id_'.$field->field_id] = $post_value ? $post_value : $data->{$field->field_name};
+			$post['field_ft_'.$field->field_id] = $field->field_fmt;
+		}
+
+		return $post;
+	}
+
+	/**
+	 * Submits an entry using the channel entries API
+	 *
+	 * @access	public
+	 * @param	mixed	The channel id
+	 * @param	array	The entry data
+	 * @return	int
+	 */
+	public function submit_entry($channel_id, $data)
+	{
+		$this->EE->load->library('api');
+		$this->EE->api->instantiate('channel_entries');
+
+		$this->EE->session->userdata['group_id'] = 1;
+
+		$this->EE->api_channel_entries->submit_new_entry($channel_id, $data);
+
+		if(count($this->EE->api_channel_entries->errors) > 0)
+		{
+			return $this->EE->api_channel_entries->errors;
+		}
+
+		return $this->EE->api_channel_entries->entry_id;
+	}
+
+	/**
+	 * Updates an entry using the channel entries API
+	 *
+	 * @access	public
+	 * @param	mixed	The channel id
+	 * @param	mixed	The entry id
+	 * @param	array	The entry data
+	 * @return	int
+	 */
+	public function update_entry($channel_id, $entry_id, $data)
+	{
+		$this->EE->load->library('api');
+		$this->EE->api->instantiate('channel_entries');
+		
+		$data['entry_id']   = $entry_id;
+		$data['channel_id'] = $channel_id;
+
+		$this->EE->session->userdata['group_id'] = 1;
+
+		$this->EE->api_channel_entries->update_entry($entry_id, $data);
+
+		if(count($this->EE->api_channel_entries->errors) > 0)
+		{
+			return $this->EE->api_channel_entries->errors;
+		}
+
+		return TRUE;
+	}
+
 }

@@ -1,11 +1,20 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.6.9
-* Build: 20120405
+* Version: 0.6.11
+* Build: 20120518
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.6.11 - 05/18/2012
+---------------------------
+- Added categories fields to the get_category_entries() method to be consistent with get_channel_entries() and get_members(). The get_categories method was maintained for legacy support.
+- Added prepare_entry(), submit_entry(), and update_entry() convenience methods to the data manipulation utility
+
+Version 0.6.10 - 04/18/2012
+---------------------------
+- Properly escaped the WHERE and HAVING values for single quotes and SQL injection attacks.
 
 Version 0.6.9 - 04/05/2012
 -------------------------

@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.9
- * @build		20120405
+ * @version		0.6.11
+ * @build		20120518
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -144,7 +144,70 @@ if(!class_exists('Channel_data_lib'))
 		 */
 		
 		public function get_categories($select = array(), $where = array(), $order_by = 'cat_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
-		{			
+		{	
+			$fields 		= $this->get_category_fields()->result();
+			$field_array	= array();
+			$field_select 	= array();
+			
+			//Default fields to select
+						
+			$default_select = array('categories.*');
+			
+			// If the parameter is polymorphic, then the variables are extracted
+			
+			if($this->is_polymorphic($select) && $polymorphic = $select)
+			{
+				extract($select);
+				
+				foreach($this->reserved_terms as $term)
+				{
+					if(!isset($polymorphic[$term]) && isset($$term) || isset($polymorphic[$term]))
+					{
+						if($term == 'select' && !isset($$term['select']))
+							$$term = $default_select;
+						else
+							$$term = isset($polymorphic[$term]) ? $polymorphic[$term] : $$term;
+						
+					}
+				}
+			}
+						
+			// Selects the appropriate field name and converts where converts
+			// where parameters to their corresponding m_field_id's
+			foreach($fields as $field)
+			{
+				if(is_array($select))
+					$select[] = 'field_id_'.$field->field_id.' as \''.$field->field_name.'\'';
+				
+				foreach($where as $index => $value)
+				{
+					$index = $this->check_ambiguity($index);
+										
+					if($field->field_name == $index)
+					{
+						unset($where[$index]);
+						$where['field_id_'.$field->field_id] = $value;
+					}
+				}		
+			}
+
+			// Joins the channel_data table
+					
+			$this->EE->db->join('category_field_data', 'categories.cat_id = category_field_data.cat_id');
+			
+			$params = array(
+				'select' 	=> $select,
+				'where' 	=> $where,
+				'order_by' 	=> $order_by,
+				'sort' 		=> $sort,
+				'limit' 	=> $limit,
+				'offset'	=> $offset
+			);
+
+			// Converts the params into active record methods
+			
+			$this->convert_params($params, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE);
+
 			return $this->get('categories', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 		
@@ -1488,7 +1551,7 @@ if(!class_exists('Channel_data_lib'))
 										$concat 		= ' OR ';									
 									}
 																					
-									$where_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field) . '\'' . $where_val . '\'';
+									$where_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field) . $this->EE->db->escape($where_val) ;
 										
 								}
 							}							 
@@ -1565,7 +1628,7 @@ if(!class_exists('Channel_data_lib'))
 											$concat 		= ' OR ';									
 										}
 																						
-										$having_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field) . '\'' . $where_val . '\'';
+										$having_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field)  .  $this->EE->db->escape($where_val);
 											
 									}
 								}
