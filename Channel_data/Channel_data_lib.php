@@ -14,7 +14,7 @@
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
  * @version		0.6.11
- * @build		20120518
+ * @build		20120524
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -144,6 +144,25 @@ if(!class_exists('Channel_data_lib'))
 		 */
 		
 		public function get_categories($select = array(), $where = array(), $order_by = 'cat_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		{			
+			return $this->get('categories', $select, $where, $order_by, $sort, $limit, $offset);
+		}
+		
+		/**
+		 * Get categories using on a series of polymorphic parameters that
+		 * returns an active record object.
+		 * 
+		 * @access	public
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @param	mixed
+		 * @return	object
+		 */
+		
+		public function get_category_entries($select = array(), $where = array(), $order_by = 'cat_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{	
 			$fields 		= $this->get_category_fields()->result();
 			$field_array	= array();
@@ -872,7 +891,7 @@ if(!class_exists('Channel_data_lib'))
 			// Selects the appropriate field name and converts where converts
 			// where parameters to their corresponding field_id's
 			$field_array = array();
-
+			
 			foreach($fields as $field)
 			{
 				if(is_array($select))
@@ -889,10 +908,10 @@ if(!class_exists('Channel_data_lib'))
 			{
 				$where_index = $this->check_ambiguity($index);
 				
-				if(isset($field_array[$where_index]))
+				if(isset($field_array[$index]))
 				{
-					unset($where_array[$where_index]);
-					$where_array['field_id_'.$field_array[$where_index]->field_id] = $value;
+					unset($where_array[$index]);
+					$where_array['field_id_'.$field_array[$index]->field_id] = $value;
 				}
 				else
 				{
@@ -905,6 +924,12 @@ if(!class_exists('Channel_data_lib'))
 				}
 			}	
 
+			if($debug)
+			{
+				var_dump($where_array);exit();
+			}
+			
+			
 			$where = $where_array;
 			
 			// Joins the channel_data table
@@ -1417,7 +1442,7 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 		 
-		public function check_ambiguity($field, $prefix = 'channel_titles')
+		public function check_ambiguity($field, $prefix = 'channel_titles.')
 		{			
 			foreach($this->ambigious_fields as $fields)
 			{			

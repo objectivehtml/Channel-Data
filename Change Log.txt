@@ -11,6 +11,7 @@ Version 0.6.11 - 05/18/2012
 ---------------------------
 - Added categories fields to the get_category_entries() method to be consistent with get_channel_entries() and get_members(). The get_categories method was maintained for legacy support.
 - Added prepare_entry(), submit_entry(), and update_entry() convenience methods to the data manipulation utility
+- Fixed bug with the get_channel_entries returning invalid field names for ambigious fields
 
 Version 0.6.10 - 04/18/2012
 ---------------------------
