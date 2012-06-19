@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.6.11
-* Build: 20120518
+* Version: 0.6.12
+* Build: 20120619
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.6.12 - 06/19/2012
+---------------------------
+- Fixed a PHP 5.4 issue with the isset function not working correctly with variable variables.
 
 Version 0.6.11 - 05/18/2012
 ---------------------------
