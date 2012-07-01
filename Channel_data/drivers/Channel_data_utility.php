@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.12
- * @build		20120619
+ * @version		0.6.13
+ * @build		20120701
  */
  
 class Channel_data_utility {
@@ -125,6 +125,33 @@ class Channel_data_utility {
 		}
 
 		return $post;
+	}
+	
+	public function reindex($data, $index)
+	{
+		if(is_string($data))
+		{
+			$old_index = $index;
+			$index     = $data;
+			$data      = $old_index;
+		}
+
+		$array = array();
+		
+		foreach($data as $key => $value)
+		{
+			if(is_array($value))
+			{
+				$array[$value[$index]] = $value;
+			}
+			
+			if(is_object($value))
+			{
+				$array[$value->$index] = $value;
+			}
+		}
+		
+		return $array;
 	}
 
 	/**

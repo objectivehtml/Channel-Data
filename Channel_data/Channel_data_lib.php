@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.12
- * @build		20120619
+ * @version		0.6.13
+ * @build		20120701
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -852,8 +852,8 @@ if(!class_exists('Channel_data_lib'))
 
 				foreach($this->reserved_terms as $term)
 				{
-					if(!isset($polymorphic[$term]) && isset($$term) || isset($polymorphic[$term]))
-					{
+                	if(!isset($polymorphic[$term]) && isset($$term) || isset($polymorphic[$term]))
+                	{
                         $var_term = $$term;
 
 						if($term == 'select' && !isset($var_term['select']))

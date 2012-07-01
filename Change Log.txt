@@ -1,11 +1,16 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.6.12
-* Build: 20120619
+* Version: 0.6.13
+* Build: 20120701
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.6.13 - 06/19/2012
+---------------------------
+- Attempted to fix another PHP 5.4 issue that wasn't fixed in the last update.
+- Added a new reindex method that will convert an indexed array to an associative array by "re-indexing" it.
 
 Version 0.6.12 - 06/19/2012
 ---------------------------
