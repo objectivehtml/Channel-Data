@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.6.13
-* Build: 20120701
+* Version: 0.7.0
+* Build: 20120711
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.7.0 - 07/11/2012
+--------------------------
+- Added new tmpl driver that makes parsing FT tags much easier
 
 Version 0.6.13 - 06/19/2012
 ---------------------------

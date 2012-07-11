@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.6.13
- * @build		20120701
+ * @version		0.7.0
+ * @build		20120711
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -863,7 +863,7 @@ if(!class_exists('Channel_data_lib'))
 					}
 				}
 			}
-
+			
 			if(count($select) == 0)
 			{
 				$select = $default_select;
@@ -947,7 +947,7 @@ if(!class_exists('Channel_data_lib'))
 				'limit' 	=> $limit,
 				'offset'	=> $offset
 			);
-
+			
 			foreach(array('join', 'having', 'group_by') as $keyword)
 			{
 				if(isset($$keyword))
