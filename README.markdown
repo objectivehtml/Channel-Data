@@ -108,7 +108,7 @@ _This example uses the standard parameters are select, where, order_by, sort, li
 			'or channel_data.entry_id'   	 => 1
 			'{2} or channel_data.entry_id'   => 2
 			'{3} or channel_data.entry_id'   => 3,
-			'channel_data.entry_d' => array(
+			'channel_data.entry_id' => array(
 				'1',
 				'OR 2',
 				'OR 3'
