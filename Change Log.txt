@@ -1,7 +1,7 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.20.0
+* Version: 0.8.0
 * Build: 20120820
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
