@@ -103,9 +103,16 @@ _This example uses the standard parameters are select, where, order_by, sort, li
 	$entries = $this->EE->channel_data->get_channel_entries($channel_id, array(
 		'select'	=> array('*'),
 		'where'		=> array(
-			'channel_data.entry_id >' 	 => 5,
-			'channel_data.channel_id !=' => 4,
-			'or channel_data.entry_id'   => 1
+			'channel_data.entry_id >' 	 	 => 5,
+			'channel_data.channel_id !=' 	 => 4,
+			'or channel_data.entry_id'   	 => 1
+			'{2} or channel_data.entry_id'   => 2
+			'{3} or channel_data.entry_id'   => 3,
+			'channel_data.entry_d' => array(
+				'1',
+				'OR 2',
+				'OR 3'
+			)
 		),
 		'order_by'	=> 'title',
 		'sort'		=> 'ASC',
