@@ -134,8 +134,6 @@ if(!class_exists('Channel_data_lib'))
 					$values = array($field => $values);
 				}
 					
-				$concat = $this->build_concat($field);
-				
 				foreach($values as $field => $value)
 				{
 					if(!is_array($value))
@@ -144,19 +142,21 @@ if(!class_exists('Channel_data_lib'))
 					}
 					
 					if(preg_match('/^\d*$/', $field))
-					{
+					{	
 						$field = $this->strip_logic($field_name);
 					}
-							
+					
+					$concat = $this->build_concat($field);
+					
 					foreach($value as $where_val)
 					{		
 						$field_sql[] = $this->build_operator($field, $where_val, $protect_identifiers);	
-					}								
+					}	
 				}
 				
 				$sql = trim(implode(' ', $field_sql));
 				
-				$where_sql[] = str_replace('()', '', $concat . '('.trim(ltrim(ltrim($sql, 'AND'), 'OR')).')');				
+				$where_sql[] = str_replace('()', '', $concat . '('.trim(ltrim(ltrim($sql, 'AND'), 'OR')).')');
 			}
 			
 			
