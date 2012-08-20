@@ -2,7 +2,7 @@
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
 * Version: 0.7.0
-* Build: 20120711
+* Build: 20120817
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
@@ -10,6 +10,9 @@
 Version 0.7.0 - 07/11/2012
 --------------------------
 - Added new tmpl driver that makes parsing FT tags much easier
+- (Bug Fix) Fixed a number of issues in the prepare_entry() method. Added more default values.
+- (Bug Fix) Fixed an API inconsistency in the submit_entry() and update_entry() methods.
+- (Big Fix) Fixed a bug in the get_channel_entries method if queries with conditionals other than the default '='.
 
 Version 0.6.13 - 06/19/2012
 ---------------------------

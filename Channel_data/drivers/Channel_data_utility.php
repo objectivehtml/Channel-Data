@@ -12,10 +12,10 @@
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
  * @version		0.7.0
- * @build		20120711
+ * @build		20120801
  */
  
-class Channel_data_utility {
+class Channel_data_utility extends Channel_data_lib {
 	
 	/**
 	 * Add a prefix to an result array or a single row.
@@ -105,8 +105,43 @@ class Channel_data_utility {
 	 */
 	public function prepare_entry($channel_id, $data, $prefix = '')
 	{
+		$this->EE->api->instantiate('channel_fields');  
+		$this->EE->api_channel_fields->fetch_custom_channel_fields();
+
 		$fields = $this->EE->channel_data->get_channel_fields($channel_id);
 
+		if(is_array($data))
+		{
+			$data = (object) $data;
+		}
+		
+		if(!isset($data->{($prefix.'entry_date')}))
+		{
+			$data->{($prefix.'entry_date')} = $this->EE->localize->now;
+		}
+		
+		if(!isset($data->{($prefix.'url_title')}))
+		{
+			$this->EE->load->helper('url');
+			
+			$data->{($prefix.'url_title')} = url_title($data->{($prefix.'title')});
+		}
+		
+		if(!isset($data->{($prefix.'expiration_date')}))
+		{
+			$data->{($prefix.'expiration_date')} = NULL;
+		}
+		
+		if(!isset($data->{($prefix.'author_id')}))
+		{
+			$data->{($prefix.'author_id')} = $this->EE->session->userdata['member_id'];
+		}
+		
+		if(!isset($data->{($prefix.'status')}))
+		{
+			$data->{($prefix.'status')} = 'open';
+		}
+		
 		$post   = array(
 			'title'           => $data->{($prefix.'title')},
 			'url_title'       => $data->{($prefix.'url_title')},
@@ -120,13 +155,13 @@ class Channel_data_utility {
 		{
 			$post_value = $this->EE->input->post($field->field_name);
 
-			$post['field_id_'.$field->field_id] = $post_value ? $post_value : $data->{$field->field_name};
+			$post['field_id_'.$field->field_id] = $post_value ? $post_value : (isset($data->{$field->field_name}) ? $data->{$field->field_name} : NULL);
 			$post['field_ft_'.$field->field_id] = $field->field_fmt;
 		}
 
 		return $post;
 	}
-	
+		
 	public function reindex($data, $index)
 	{
 		if(is_string($data))
@@ -166,9 +201,12 @@ class Channel_data_utility {
 	{
 		$this->EE->load->library('api');
 		$this->EE->api->instantiate('channel_entries');
-
+		$this->EE->api->instantiate('channel_fields');
+		
 		$this->EE->session->userdata['group_id'] = 1;
 
+		$this->EE->api_channel_fields->setup_entry_settings($channel_id, $data);
+		
 		$this->EE->api_channel_entries->submit_new_entry($channel_id, $data);
 
 		if(count($this->EE->api_channel_entries->errors) > 0)
@@ -199,7 +237,7 @@ class Channel_data_utility {
 		$this->EE->session->userdata['group_id'] = 1;
 
 		$this->EE->api_channel_entries->update_entry($entry_id, $data);
-
+		
 		if(count($this->EE->api_channel_entries->errors) > 0)
 		{
 			return $this->EE->api_channel_entries->errors;
