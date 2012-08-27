@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.8.0
-* Build: 20120820
+* Version: 0.8.1
+* Build: 20120827
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.8.1 - 08/20/2012
+--------------------------
+- Fixed a bug that prevented the default select vars from working in the get_channel_entries method.
 
 Version 0.8.0 - 08/20/2012
 --------------------------

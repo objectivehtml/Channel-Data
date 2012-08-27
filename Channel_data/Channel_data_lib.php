@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.7.0
- * @build		20120817
+ * @version		0.8.1
+ * @build		20120827
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -1070,8 +1070,8 @@ if(!class_exists('Channel_data_lib'))
 		 */
 		public function get_channel_entries($channel_id, $select = array(), $where = array(), $order_by = 'channel_titles.channel_id', $sort = 'DESC', $limit = FALSE, $offset = 0, $debug = FALSE)
 		{
-
 			$default_select = array('channel_data.entry_id', 'channel_data.channel_id', 'channel_titles.author_id', 'channel_titles.title', 'channel_titles.url_title', 'channel_titles.entry_date', 'channel_titles.expiration_date', 'status');
+			
 			$default_select = ($select == array()) ? $default_select : (isset($select['select']) ? $select['select'] : $default_select);
 
 			// If the parameter is polymorphic, then the variables are extracted
@@ -1133,7 +1133,7 @@ if(!class_exists('Channel_data_lib'))
 			$this->EE->db->join('channel_data', 'channel_titles.entry_id = channel_data.entry_id');
 
 			$params = array(
-				'select' 	=> $select,
+				'select' 	=> array_merge($default_select, $select),
 				'where' 	=> $where,
 				'order_by' 	=> $order_by,
 				'sort' 		=> $sort,

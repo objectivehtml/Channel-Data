@@ -1,7 +1,7 @@
 Channel Data
 ============
 
-### Version 0.8.0 - 20120820
+### Version 0.8.1 - 20120827
 
 #### By Justin Kimbrell / Objective HTML
 
