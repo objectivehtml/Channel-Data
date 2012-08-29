@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.1
- * @build		20120827
+ * @version		0.8.2
+ * @build		20120828
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -56,7 +56,10 @@ if(!class_exists('Channel_data_lib'))
 		
 		public function strip_logic($field)
 		{
-			$field  = str_replace(array("or", "OR", 'and', 'AND'), '', preg_replace('/\{+\d+\}/', '', $field));
+			foreach(array("or", "OR", 'and', 'AND') as $condition)
+			{
+				$field = trim(preg_replace('/^'.$condition.'/', '', $field));	
+			}
 			
 			foreach($this->conditionals as $condition)
 			{
@@ -116,7 +119,7 @@ if(!class_exists('Channel_data_lib'))
 			{
 				$field = $this->EE->db->protect_identifiers($field);
 			}
-	
+			
 			return $concat . $this->remove_conditionals($field) . $this->assign_conditional($field) . $this->EE->db->escape($value) ;
 		}
 		
@@ -128,12 +131,14 @@ if(!class_exists('Channel_data_lib'))
 			{
 				$field_name = $field;
 				$field_sql  = array();
-						
+				
 				if(!is_array($values))
 				{
-					$values = array($field => $values);
+					$values = array($field => array($values));
 				}
-					
+				
+			$reserved = array('channel_id', 'group_id', 'channel_data.channel_id', 'status', 'channel_titles.channel_id', 'channel_name', 'author_id', 'url_title', 'field_id_135', 'author_id', 'author_id', 'author_id', 'author_id', 'author_id', 'author_id');
+			
 				foreach($values as $field => $value)
 				{
 					if(!is_array($value))
@@ -147,7 +152,8 @@ if(!class_exists('Channel_data_lib'))
 					}
 					
 					$concat = $this->build_concat($field);
-					
+				
+			
 					foreach($value as $where_val)
 					{		
 						$field_sql[] = $this->build_operator($field, $where_val, $protect_identifiers);	
@@ -255,25 +261,17 @@ if(!class_exists('Channel_data_lib'))
 						
 						//$index = trim(preg_replace('/'.$condition.'/', '', $index));
 					}
-					
-					//var_dump($index);exit();
-									
+						
 					if(isset($field_array[$index]))
 					{
 						$field_array[$index] = (object) $field_array[$index];
 						
 						unset($where_array[$index]);
 						
-						$statements[$digit.$operator.'field_id_'.$field_array[$index]->field_id.$conditional] = $value;
+						$statements[$digit.$operator.'field_id_'.$field_array[$index]->field_id.$conditional][] = $value;						
 					}
 					else
 					{
-						if($debug)
-						{
-							//$debug_where[$index] = $field_array[$index]->field_name;
-						}
-						
-						//var_dump($where_index);echo '<br><br>';
 						$statements[$index][] = $value;
 					}				
 				}
@@ -1087,9 +1085,13 @@ if(!class_exists('Channel_data_lib'))
                         $var_term = $$term;
 
 						if($term == 'select' && !isset($var_term['select']))
+						{
 							$$term = $default_select;
+						}
 						else
+						{
 							$$term = isset($polymorphic[$term]) ? $polymorphic[$term] : $$term;
+						}
 					}
 				}
 			}
@@ -1135,7 +1137,7 @@ if(!class_exists('Channel_data_lib'))
 			$params = array(
 				'select' 	=> array_merge($default_select, $select),
 				'where' 	=> $where,
-				'order_by' 	=> $order_by,
+				'order_by' 	=> $this->check_ambiguity($order_by),
 				'sort' 		=> $sort,
 				'limit' 	=> $limit,
 				'offset'	=> $offset
@@ -1149,8 +1151,6 @@ if(!class_exists('Channel_data_lib'))
 				}
 			}
 
-			// Converts the params into active record methods
-			
 			$this->convert_params($params, FALSE, FALSE, FALSE, FALSE, FALSE, $debug);
 
 			return $this->EE->db->get('channel_titles');
@@ -1640,9 +1640,11 @@ if(!class_exists('Channel_data_lib'))
 
 		public function check_ambiguity($field, $prefix = 'channel_titles.')
 		{
+			$field = str_replace($prefix, '', $field);
+			
 			foreach($this->ambigious_fields as $fields)
 			{
-				if(strpos($field, $fields) !== FALSE)
+				if($field == $fields)
 				{
 					$field = $prefix.$field;
 				}

@@ -1,13 +1,19 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.8.1
-* Build: 20120827
+* Version: 0.8.2
+* Build: 20120828
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
 
-Version 0.8.1 - 08/20/2012
+Version 0.8.2 - 08/28/2012
+--------------------------
+- Fixed a bug that omitted certain fields from the prepare_entry method.
+- Fixed a bug in the check_ambiguity method that return and improper value.
+- Fixed a bug in build_where method that prevented compound conditionals from working.
+
+Version 0.8.1 - 08/27/2012
 --------------------------
 - Fixed a bug that prevented the default select vars from working in the get_channel_entries method.
 
