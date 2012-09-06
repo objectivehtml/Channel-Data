@@ -12,6 +12,7 @@ Version 0.8.2 - 08/28/2012
 - Fixed a bug that omitted certain fields from the prepare_entry method.
 - Fixed a bug in the check_ambiguity method that return and improper value.
 - Fixed a bug in build_where method that prevented compound conditionals from working.
+- Added new methods to the tmpl driver to make parsing easier.
 
 Version 0.8.1 - 08/27/2012
 --------------------------

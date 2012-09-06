@@ -31,20 +31,28 @@ class Channel_data_utility extends Channel_data_lib {
 	 {
 	 	$new_data = array();
 	 	
+	 	
 	 	if(!empty($prefix))
 	 	{
 		 	foreach($data as $data_index => $data_value)
 		 	{
 		 		if(is_array($data_value))
 		 		{
-		 			$new_row = array();
-		 			
-		 			foreach($data_value as $inner_index => $inner_value)
+		 			if(isset($data_value[0]) && !is_array($data_value[0]))
 		 			{
-		 				$new_row[$prefix . $delimeter . $inner_index] = $inner_value;
+			 			$new_row = array();
+			 			
+			 			foreach($data_value as $inner_index => $inner_value)
+			 			{
+			 				$new_row[$prefix . $delimeter . $inner_index] = $inner_value;
+			 			}
+			 			
+			 			$new_data[$data_index] = $new_row;
 		 			}
-		 			
-		 			$new_data[$data_index] = $new_row;
+		 			else
+		 			{
+		 				$new_data[$prefix . $delimeter . $data_index] = $data_value;
+		 			}
 		 		}
 		 		else
 		 		{
