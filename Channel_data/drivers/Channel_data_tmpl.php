@@ -111,18 +111,23 @@ class Channel_data_tmpl extends Channel_data_lib {
 			$channels = $this->EE->channel_data->utility->reindex($channels, 'channel_id');
 		}
 		
+		if(is_object($parse_array))
+		{
+			$parse_array = (array) $parse_array;	
+		}
+				
 		foreach($parse_array as $index => $value)
 		{
 			if(!empty($value))
 			{
-				$parse_array[$index] = $this->parse($parse_vars, $entry_data, $channels, $channel_fields, $value);
+				$parse_array[$index] = $this->parse($parse_vars, $entry_data, $channels, $channel_fields, $value, $index);
 			}
 		}
 		
 		return $parse_array;
 	}
 	
-	public function parse($parse_vars = array(), $entry_data = array(), $channels = FALSE, $channel_fields = FALSE, $tagdata = FALSE)
+	public function parse($parse_vars = array(), $entry_data = array(), $channels = FALSE, $channel_fields = FALSE, $tagdata = FALSE, $index = FALSE)
 	{
 		if(!$tagdata)
 		{
@@ -141,12 +146,17 @@ class Channel_data_tmpl extends Channel_data_lib {
 			$channel_fields = $this->EE->channel_data->utility->reindex($channel_fields, 'field_name');
 		}
 		
-		$TMPL = $this->EE->channel_data->tmpl->create_alias($tagdata);
-				
+		if(is_object($parse_vars))
+		{
+			$parse_vars = (array) $parse_vars;	
+		}
+			
 		if(!isset($parse_vars[0]))
 		{
-			$parse_vars = array((array) $parse_vars);
+			$parse_vars = array($parse_vars);
 		}
+			
+		$TMPL = $this->EE->channel_data->tmpl->create_alias($tagdata);
 		
 		$this->EE->TMPL->template = $this->EE->TMPL->parse_variables($this->EE->TMPL->template, $parse_vars);
 		
