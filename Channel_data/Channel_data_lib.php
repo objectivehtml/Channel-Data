@@ -1133,7 +1133,12 @@ if(!class_exists('Channel_data_lib'))
 			// Joins the channel_data table
 
 			$this->EE->db->join('channel_data', 'channel_titles.entry_id = channel_data.entry_id');
-
+			
+			if(!is_array($default_select))
+			{
+				$default_select = array($default_select);	
+			}
+			
 			$params = array(
 				'select' 	=> array_merge($default_select, $select),
 				'where' 	=> $where,

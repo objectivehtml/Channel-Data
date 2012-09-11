@@ -108,7 +108,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 		return $this->EE->TMPL->parse_variables_row($tagdata, $row, FALSE);	
 	}
 	
-	public function parse_array($parse_array = array(), $parse_vars = array(), $entry_data  = array(), $channels = FALSE, $channel_fields = array())
+	public function parse_array($parse_array = array(), $parse_vars = array(), $entry_data  = array(), $channels = FALSE, $channel_fields = array(), $prefix = '')
 	{
 		if(!$channel_fields)
 		{
@@ -126,12 +126,12 @@ class Channel_data_tmpl extends Channel_data_lib {
 		{
 			$parse_array = (array) $parse_array;	
 		}
-				
+		
 		foreach($parse_array as $index => $value)
 		{
 			if(!empty($value) && is_string($value))
 			{
-				$parse_array[$index] = $this->parse($parse_vars, $entry_data, $channels, $channel_fields, $value, $index);
+				$parse_array[$index] = $this->parse($parse_vars, $entry_data, $channels, $channel_fields, $value, $prefix, $index);
 				
 			}
 		}
@@ -139,7 +139,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 		return $parse_array;
 	}
 	
-	public function parse($parse_vars = array(), $entry_data = array(), $channels = FALSE, $channel_fields = FALSE, $tagdata = FALSE, $index = FALSE)
+	public function parse($parse_vars = array(), $entry_data = array(), $channels = FALSE, $channel_fields = FALSE, $tagdata = FALSE, $prefix = '', $index = FALSE)
 	{
 		if(!$tagdata)
 		{
@@ -174,7 +174,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 		
 		$this->EE->TMPL->parse($this->EE->TMPL->template);
 		
-		$this->EE->TMPL->template = $this->parse_fieldtypes($entry_data, $channels, $channel_fields);	
+		$this->EE->TMPL->template = $this->parse_fieldtypes($entry_data, $channels, $channel_fields, $this->EE->TMPL->template, $prefix, $index);	
 		
 		$return = $this->EE->TMPL->template;
 			
@@ -188,13 +188,34 @@ class Channel_data_tmpl extends Channel_data_lib {
 		return $this->parse($parse_vars, $entry_data, $channels, $channel_fields, $string);
 	}
 	
-	public function parse_single_vars($vars, $entry_data = array(), $channels = array(), $channel_fields = array(), $tagdata = FALSE)
+	public function parse_fieldtypes($entry_data = array(), $channels = array(), $channel_fields = array(), $tagdata = FALSE, $prefix = '', $index = FALSE)
+	{
+		if(!$tagdata)
+		{
+			$tagdata = $this->EE->TMPL->template;
+		}
+		
+		$vars    = $this->EE->functions->assign_variables($tagdata);
+		
+		$tagdata = $this->parse_single_vars($vars, $entry_data, $channels, $channel_fields, $tagdata, $prefix, $index);
+		
+		$tagdata = $this->parse_var_pairs($vars, $entry_data, $channels, $channel_fields, $tagdata, $prefix, $index);
+		
+		return $tagdata;	
+	}
+	
+	public function parse_single_vars($vars, $entry_data = array(), $channels = array(), $channel_fields = array(), $tagdata = FALSE, $prefix = '', $index = FALSE)
 	{
 		$entry_data = (object) $entry_data;
 		
 		if(!$tagdata)
 		{
 			$tagdata = $this->EE->TMPL->template;
+		}
+		
+		if(!is_array($prefix))
+		{
+			$prefix = array($prefix);
 		}
 		
 		foreach($vars['var_single'] as $single_var)
@@ -204,14 +225,15 @@ class Channel_data_tmpl extends Channel_data_lib {
 			$single_var_array = explode(' ', $single_var);
 			
 			$field_name = str_replace('', '', $single_var_array[0]);
-		
+			$field_name = str_replace($prefix, '', $field_name);
+			
 			$entry = FALSE;
 
 			if(isset($channel_fields[$field_name]))
 			{
 				if(is_array($channel_fields[$field_name]))
 				{
-						$channel_fields[$field_name] = (object) $channel_fields[$field_name];
+					$channel_fields[$field_name] = (object) $channel_fields[$field_name];
 				}
 				
 				$field_type = $channel_fields[$field_name]->field_type;
@@ -253,7 +275,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 		return $tagdata;
 	}
 	
-	public function parse_var_pairs($vars, $entry_data = array(), $channels = array(), $channel_fields = array(), $tagdata = FALSE)
+	public function parse_var_pairs($vars, $entry_data = array(), $channels = array(), $channel_fields = array(), $tagdata = FALSE, $prefix = '', $index = FALSE)
 	{
 		$entry_data = (array) $entry_data;
 		
@@ -262,6 +284,11 @@ class Channel_data_tmpl extends Channel_data_lib {
 			$tagdata = $this->EE->TMPL->template;
 		}
 		
+		if(!is_array($prefix))
+		{
+			$prefix = array($prefix);
+		}
+					
 		$pair_vars = array();
 
 		foreach($vars['var_pair'] as $pair_var => $params)
@@ -269,56 +296,78 @@ class Channel_data_tmpl extends Channel_data_lib {
 			$pair_var_array = explode(' ', $pair_var);
 			
 			$field_name = str_replace('', '', $pair_var_array[0]);
-			$offset = 0;
-
-			while (($end = strpos($tagdata, LD.'/'.$field_name.RD, $offset)) !== FALSE)
+			$field_name = str_replace($prefix, '', $field_name);
+			
+			foreach($prefix as $prefix)
 			{
-				if (preg_match("/".LD."{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$field_name.RD."/s", $tagdata, $matches, 0, $offset))
+				$offset = 0;
+	
+				while (($end = strpos($tagdata, LD.'/'.$prefix.$field_name.RD, $offset)) !== FALSE)
 				{
-					$chunk  = $matches[0];
-					$params = $matches[1];
-					$inner  = $matches[2];
-
-					// We might've sandwiched a single tag - no good, check again (:sigh:)
-					if ((strpos($chunk, LD.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{$field_name}(.*?)".RD."/s", $chunk, $match))
+					if (preg_match("/".LD."{$prefix}{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$prefix.$field_name.RD."/s", $tagdata, $matches, 0, $offset))
 					{
-						// Let's start at the end
-						$idx = count($match[0]) - 1;
-						$tag = $match[0][$idx];
-						
-						// Reassign the parameter
-						$params = $match[1][$idx];
-
-						// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
-						while (strpos($chunk, $tag, 1) !== FALSE)
+						$chunk  = $matches[0];
+						$params = $matches[1];
+						$inner  = $matches[2];
+	
+						// We might've sandwiched a single tag - no good, check again (:sigh:)
+						if ((strpos($chunk, LD.$prefix.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{prefix}{$field_name}(.*?)".RD."/s", $chunk, $match))
 						{
-							$chunk = substr($chunk, 1);
-							$chunk = strstr($chunk, LD.$field_name);
-							$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$field_name.RD));
+							// Let's start at the end
+							$idx = count($match[0]) - 1;
+							$tag = $match[0][$idx];
+							
+							// Reassign the parameter
+							$params = $match[1][$idx];
+	
+							// Cut the chunk at the last opening tag (PHP5 could do this with strrpos :-( )
+							while (strpos($chunk, $tag, 1) !== FALSE)
+							{
+								$chunk = substr($chunk, 1);
+								$chunk = strstr($chunk, LD.$prefix.$field_name);
+								$inner = substr($chunk, strlen($tag), -strlen(LD.'/'.$prefix.$field_name.RD));
+							}
 						}
+						
+						$pair_vars[$field_name] = array($inner, $this->EE->functions->assign_parameters($params), $chunk);
 					}
 					
-					$pair_vars[$field_name] = array($inner, $this->EE->functions->assign_parameters($params), $chunk);
+					$offset = $end + 1;
 				}
-				
-				$offset = $end + 1;
 			}
 
 			foreach($pair_vars as $field_name => $pair_var)
-			{																
+			{													
 				if(isset($channel_fields[$field_name]) && isset($channel_fields[$field_name]->field_type))
 				{
-					$entry_data = (object) $entry_data;
+					$entry_data = (array) $entry_data;
 					$field_type = $channel_fields[$field_name]->field_type;
 					$field_id   = $channel_fields[$field_name]->field_id;
 
-					$data       = $entry_data->$field_name;
+					$data       = isset($entry_data[$field_name]) ? $entry_data[$field_name] : NULL;
 					
 					if($this->EE->api_channel_fields->setup_handler($field_id))
 					{
+						$row = $entry_data;
+							
+						foreach($entry_data as $index => $value)
+						{
+							if(isset($channel_fields[$index]) && !isset($row['field_id_'.$channel_fields[$index]->field_id]))
+							{
+								$row['field_id_'.$channel_fields[$index]->field_id] = $value;
+								$row['field_ft_'.$channel_fields[$index]->field_id] = $channel_fields[$index]->field_fmt;	
+							}
+							else
+							{
+								$row[$index] = $value;
+							}
+						}
+						
+						$this->EE->api_channel_fields->apply('_init', array(array('row' => $row)));
 						$entry = $this->EE->api_channel_fields->apply('replace_tag', array($data, $pair_var[1], $pair_var[0]));
 						
-						$tagdata = str_replace($pair_var[2], $entry, $tagdata);
+						$tagdata = $this->parse_string(str_replace($pair_var[2], $entry, $tagdata), $entry_data,  $channels, $channel_fields);
+						
 					}
 				}
 			}
@@ -327,21 +376,6 @@ class Channel_data_tmpl extends Channel_data_lib {
 		}
 		
 		return $tagdata;
-	}
-	
-	public function parse_fieldtypes($entry_data = array(), $channels = array(), $channel_fields = array(), $tagdata = FALSE)
-	{
-		if(!$tagdata)
-		{
-			$tagdata = $this->EE->TMPL->template;
-		}
-		
-		$vars    = $this->EE->functions->assign_variables($this->EE->TMPL->template);
-		
-		$tagdata = $this->parse_single_vars($vars, $entry_data, $channels, $channel_fields, $tagdata);
-		$tagdata = $this->parse_var_pairs($vars, $entry_data, $channels, $channel_fields, $tagdata);
-		
-		return $tagdata;	
 	}
 	
 	public function parse_entry($entry_data, $channels = array(), $channel_fields = array(), $tagdata = FALSE, $count = 1)
