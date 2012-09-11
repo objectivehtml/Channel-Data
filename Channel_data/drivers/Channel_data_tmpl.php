@@ -12,7 +12,7 @@
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
  * @version		0.8.2
- * @build		20120905
+ * @build		20120910
  */
  
 class Channel_data_tmpl extends Channel_data_lib {
@@ -21,22 +21,33 @@ class Channel_data_tmpl extends Channel_data_lib {
 	{
 		parent::__construct();
 		
-		$this->init();
+		
+		if(!isset($this->EE->TMPL))
+		{
+			$this->init();
+		}
 	}
 		
 	public function init($tagdata = FALSE)
 	{
-		if(!isset($this->EE->TMPL))
+		$orig_settings = FALSE;
+		
+		if(isset($this->EE->api_channel_fields->settings))
 		{
-			require_once APPPATH.'/libraries/Template.php';
+			$orig_settings = $this->EE->api_channel_fields->settings;
 		}
-
+		
 		$this->EE->load->library('typography');
 		$this->EE->load->library('api');
 		$this->EE->api->instantiate('channel_fields');
-		
+				
 		$fields = $this->EE->api_channel_fields->fetch_custom_channel_fields();
 
+		if($orig_settings)
+		{
+			$this->EE->api_channel_fields->settings = $orig_settings;
+		}
+		
 		$parse_object = (object) array();
 	}
 	
@@ -118,9 +129,10 @@ class Channel_data_tmpl extends Channel_data_lib {
 				
 		foreach($parse_array as $index => $value)
 		{
-			if(!empty($value))
+			if(!empty($value) && is_string($value))
 			{
 				$parse_array[$index] = $this->parse($parse_vars, $entry_data, $channels, $channel_fields, $value, $index);
+				
 			}
 		}
 		
