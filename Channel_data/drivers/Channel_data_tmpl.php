@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.2
- * @build		20120910
+ * @version		0.8.3
+ * @build		20120912
  */
  
 class Channel_data_tmpl extends Channel_data_lib {
@@ -206,19 +206,15 @@ class Channel_data_tmpl extends Channel_data_lib {
 	
 	public function parse_single_vars($vars, $entry_data = array(), $channels = array(), $channel_fields = array(), $tagdata = FALSE, $prefix = '', $index = FALSE)
 	{
-		$entry_data = (object) $entry_data;
+		$entry_data   = (object) $entry_data;
+		$prefix_entry = (object) $this->EE->channel_data->utility->add_prefix($prefix, $entry_data, '');
 		
 		if(!$tagdata)
 		{
 			$tagdata = $this->EE->TMPL->template;
 		}
 		
-		if(!is_array($prefix))
-		{
-			$prefix = array($prefix);
-		}
-		
-		foreach($vars['var_single'] as $single_var)
+		foreach($vars['var_single'] as $single_var => $single_var_value)
 		{
 			$params = $this->EE->functions->assign_parameters($single_var);
 
@@ -268,6 +264,17 @@ class Channel_data_tmpl extends Channel_data_lib {
 						
 						$tagdata = $this->EE->TMPL->swap_var_single($single_var, $entry, $tagdata);
 					}
+				}
+			}
+			else
+			{
+				$var_name = preg_replace('/\s.*$/', '', $single_var);
+					
+				if(isset($prefix_entry->$var_name))
+				{
+					$tagdata = $this->EE->TMPL->parse_variables_row($tagdata, array(
+						$var_name => $prefix_entry->$var_name
+					));
 				}
 			}
 		}
@@ -377,7 +384,8 @@ class Channel_data_tmpl extends Channel_data_lib {
 		
 		return $tagdata;
 	}
-	
+
+	/* @deprecated */	
 	public function parse_entry($entry_data, $channels = array(), $channel_fields = array(), $tagdata = FALSE, $count = 1)
 	{
 		$TMPL = $this->EE->channel_data->tmpl->create_alias($tagdata);
