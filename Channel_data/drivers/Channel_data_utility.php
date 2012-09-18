@@ -36,7 +36,7 @@ class Channel_data_utility extends Channel_data_lib {
 	 	{
 		 	foreach($data as $data_index => $data_value)
 		 	{
-		 		if(is_array($data_value))
+		 		if(is_array($data_value) && preg_match('/\d/', $data_index))
 		 		{
 		 			if(isset($data_value[0]) && !is_array($data_value[0]))
 		 			{
@@ -51,8 +51,9 @@ class Channel_data_utility extends Channel_data_lib {
 		 			}
 		 			else
 		 			{
-		 				$new_data[$prefix . $delimeter . $data_index] = $data_value;
+		 				$new_data[$data_index] = $this->add_prefix($prefix, $data_value, $delimeter);
 		 			}
+		 			
 		 		}
 		 		else
 		 		{
