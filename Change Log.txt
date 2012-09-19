@@ -1,11 +1,19 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.8.2
-* Build: 20120828
+* Version: 0.8.4
+* Build: 20120919
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.8.4 - 09/19/2012
+--------------------------
+- Fixed bugs in the template parser
+
+Version 0.8.3 - 09/04/2012
+--------------------------
+- Fixed bugs in the template parser
 
 Version 0.8.2 - 08/28/2012
 --------------------------

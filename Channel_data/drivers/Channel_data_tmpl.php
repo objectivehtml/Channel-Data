@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.3
- * @build		20120912
+ * @version		0.8.4
+ * @build		20120919
  */
  
 class Channel_data_tmpl extends Channel_data_lib {
@@ -282,7 +282,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 		return $tagdata;
 	}
 	
-	public function parse_var_pairs($vars, $entry_data = array(), $channels = array(), $channel_fields = array(), $tagdata = FALSE, $prefix = '', $index = FALSE)
+	public function parse_var_pairs($vars, $entry_data = array(), $channels = array(), $channel_fields = array(), $tagdata = FALSE, $prefixes = '', $index = FALSE)
 	{
 		$entry_data = (array) $entry_data;
 		
@@ -291,22 +291,22 @@ class Channel_data_tmpl extends Channel_data_lib {
 			$tagdata = $this->EE->TMPL->template;
 		}
 		
-		if(!is_array($prefix))
+		if(!is_array($prefixes))
 		{
-			$prefix = array($prefix);
+			$prefixes = array($prefixes);
 		}
 					
 		$pair_vars = array();
 
 		foreach($vars['var_pair'] as $pair_var => $params)
 		{
-			$pair_var_array = explode(' ', $pair_var);
-			
-			$field_name = str_replace('', '', $pair_var_array[0]);
-			$field_name = str_replace($prefix, '', $field_name);
-			
-			foreach($prefix as $prefix)
+			foreach($prefixes as $prefix)
 			{
+				$pair_var_array = explode(' ', $pair_var);
+				
+				$field_name = str_replace('', '', $pair_var_array[0]);
+				$field_name = str_replace($prefix, '', $field_name);
+				
 				$offset = 0;
 	
 				while (($end = strpos($tagdata, LD.'/'.$prefix.$field_name.RD, $offset)) !== FALSE)
