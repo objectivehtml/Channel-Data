@@ -207,6 +207,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 	public function parse_single_vars($vars, $entry_data = array(), $channels = array(), $channel_fields = array(), $tagdata = FALSE, $prefix = '', $index = FALSE)
 	{
 		$entry_data   = (object) $entry_data;
+		
 		$prefix_entry = (object) $this->EE->channel_data->utility->add_prefix($prefix, $entry_data, '');
 		
 		if(!$tagdata)
@@ -221,7 +222,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 			$single_var_array = explode(' ', $single_var);
 			
 			$field_name = str_replace('', '', $single_var_array[0]);
-			$field_name = str_replace($prefix, '', $field_name);
+			$field_name = preg_replace('/^'.$prefix.'/us', '', $field_name);
 			
 			$entry = FALSE;
 
@@ -235,9 +236,9 @@ class Channel_data_tmpl extends Channel_data_lib {
 				$field_type = $channel_fields[$field_name]->field_type;
 				$field_id   = $channel_fields[$field_name]->field_id;
 				
-				if(isset($entry_data->$field_name))
+				if(isset($entry_data->$field_name) || isset($entry_data->{'field_id_'.$field_id}))
 				{
-					$data       = $entry_data->$field_name;
+					$data  = isset($entry_data->$field_name) ? $entry_data->$field_name : $entry_data->{'field_id_'.$field_id};
 					
 					if($this->EE->api_channel_fields->setup_handler($field_id))
 					{
@@ -305,20 +306,20 @@ class Channel_data_tmpl extends Channel_data_lib {
 				$pair_var_array = explode(' ', $pair_var);
 				
 				$field_name = str_replace('', '', $pair_var_array[0]);
-				$field_name = str_replace($prefix, '', $field_name);
+				$field_name = preg_replace('/^'.$prefix.'/us', '', $field_name);
 				
 				$offset = 0;
-	
+				
 				while (($end = strpos($tagdata, LD.'/'.$prefix.$field_name.RD, $offset)) !== FALSE)
 				{
-					if (preg_match("/".LD."{$prefix}{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$prefix.$field_name.RD."/s", $tagdata, $matches, 0, $offset))
+					if (preg_match("/\\".LD."{$prefix}{$field_name}(.*?)".RD."(.*?)".LD.'\/'.$prefix.$field_name.RD."/s", $tagdata, $matches, 0, $offset))
 					{
 						$chunk  = $matches[0];
 						$params = $matches[1];
 						$inner  = $matches[2];
 	
 						// We might've sandwiched a single tag - no good, check again (:sigh:)
-						if ((strpos($chunk, LD.$prefix.$field_name, 1) !== FALSE) && preg_match_all("/".LD."{prefix}{$field_name}(.*?)".RD."/s", $chunk, $match))
+						if ((strpos($chunk, LD.$prefix.$field_name, 1) !== FALSE) && preg_match_all("/\\".LD."{$prefix}{$field_name}(.*?)".RD."/s", $chunk, $match))
 						{
 							// Let's start at the end
 							$idx = count($match[0]) - 1;
@@ -336,17 +337,27 @@ class Channel_data_tmpl extends Channel_data_lib {
 							}
 						}
 						
-						$pair_vars[$field_name] = array($inner, $this->EE->functions->assign_parameters($params), $chunk);
+						$pair_vars[$field_name] = array($inner, $this->EE->functions->assign_parameters($params), $chunk);						
 					}
 					
 					$offset = $end + 1;
 				}
 			}
 
+	
 			foreach($pair_vars as $field_name => $pair_var)
-			{													
-				if(isset($channel_fields[$field_name]) && isset($channel_fields[$field_name]->field_type))
+			{		
+				if(isset($channel_fields[$field_name]))
 				{
+					$channel_fields[$field_name] = (object) $channel_fields[$field_name];
+				}
+								
+				$field_id   = isset($channel_fields[$field_name]->field_id) ? $channel_fields[$field_name]->field_id : 0;
+				
+				if((isset($channel_fields[$field_name]) || isset($channel_fields['field_id_'.$field_id])) && (isset($channel_fields[$field_name]->field_type) || isset($channel_fields['field_id_'.$field_id]->field_type)))
+				{
+					$field_name = isset($channel_fields[$field_name]) ? $field_name : 'field_id_'.$field_id;
+					
 					$entry_data = (array) $entry_data;
 					$field_type = $channel_fields[$field_name]->field_type;
 					$field_id   = $channel_fields[$field_name]->field_id;
@@ -359,7 +370,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 							
 						foreach($entry_data as $index => $value)
 						{
-							if(isset($channel_fields[$index]) && !isset($row['field_id_'.$channel_fields[$index]->field_id]))
+							if(isset($channel_fields[$index]) && isset($channel_fields[$index]->field_id) && !isset($row['field_id_'.$channel_fields[$index]->field_id]))
 							{
 								$row['field_id_'.$channel_fields[$index]->field_id] = $value;
 								$row['field_ft_'.$channel_fields[$index]->field_id] = $channel_fields[$index]->field_fmt;	
