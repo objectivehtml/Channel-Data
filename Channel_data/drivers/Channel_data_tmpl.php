@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.4
- * @build		20120919
+ * @version		0.8.5
+ * @build		20120926
  */
  
 class Channel_data_tmpl extends Channel_data_lib {
@@ -20,8 +20,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 	public function __construct()
 	{
 		parent::__construct();
-		
-		
+				
 		if(!isset($this->EE->TMPL))
 		{
 			$this->init();
@@ -221,8 +220,10 @@ class Channel_data_tmpl extends Channel_data_lib {
 
 			$single_var_array = explode(' ', $single_var);
 			
-			$field_name = str_replace('', '', $single_var_array[0]);
-			$field_name = preg_replace('/^'.$prefix.'/us', '', $field_name);
+			$field_name  = str_replace('', '', $single_var_array[0]);			
+			$call_method = preg_replace("/(^((?!:).)*$)|(^.*:)/us", "", $field_name);		
+			$call_method = 'replace_'.(!empty($call_method) ? $call_method : 'tag');	
+			$field_name  = preg_replace('/^'.$prefix.'|:.*/us', '', $field_name);	
 			
 			$entry = FALSE;
 
@@ -261,7 +262,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 						// Preprocess
 						$data = $this->EE->api_channel_fields->apply('pre_process', array($row['field_id_'.$field_id]));
 	
-						$entry = $this->EE->api_channel_fields->apply('replace_tag', array($data, $params, FALSE));
+						$entry = $this->EE->api_channel_fields->apply($call_method, array($data, $params, FALSE));
 						
 						$tagdata = $this->EE->TMPL->swap_var_single($single_var, $entry, $tagdata);
 					}

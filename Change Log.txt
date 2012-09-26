@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.8.4
-* Build: 20120919
+* Version: 0.8.5
+* Build: 20120926
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.8.5 - 09/19/2012
+--------------------------
+- Fixed bugs that prevent template parse from parsing alt field type methods.
 
 Version 0.8.4 - 09/19/2012
 --------------------------
