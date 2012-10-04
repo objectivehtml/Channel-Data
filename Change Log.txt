@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* Version: 0.8.5
-* Build: 20120926
+* Version: 0.8.6
+* Build: 20121004
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.8.6 - 09/19/2012
+--------------------------
+- Fixed more parsing bugs. Trying to get the FT parsing nailed in this release.
 
 Version 0.8.5 - 09/19/2012
 --------------------------

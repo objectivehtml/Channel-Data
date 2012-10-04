@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.5
- * @build		20120926
+ * @version		0.8.6
+ * @build		20121004
  */
  
 class Channel_data_tmpl extends Channel_data_lib {
@@ -166,7 +166,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 		{
 			$parse_vars = array($parse_vars);
 		}
-			
+		
 		$TMPL = $this->EE->channel_data->tmpl->create_alias($tagdata);
 		
 		$this->EE->TMPL->template = $this->EE->TMPL->parse_variables($this->EE->TMPL->template, $parse_vars);
@@ -235,9 +235,14 @@ class Channel_data_tmpl extends Channel_data_lib {
 				{
 					$channel_fields[$field_name] = (object) $channel_fields[$field_name];
 				}
-				
+
 				$field_type = $channel_fields[$field_name]->field_type;
 				$field_id   = $channel_fields[$field_name]->field_id;
+				
+				if(isset($entry_data->{$single_var_array[0]}))
+				{
+					$field_name = $single_var_array[0];
+				}
 				
 				if(isset($entry_data->$field_name) || isset($entry_data->{'field_id_'.$field_id}))
 				{
@@ -245,13 +250,16 @@ class Channel_data_tmpl extends Channel_data_lib {
 					
 					if($this->EE->api_channel_fields->setup_handler($field_id))
 					{
-						$row = array_merge((array) $channels[$entry_data->channel_id], (array) $entry_data);
+						$channel = isset($channels[$entry_data->{$prefix.'channel_id'}]) ? $channels[$entry_data->{$prefix.'channel_id'}] : $channels[$entry_data->channel_id];
+						
+						$row = array_merge((array) $channel, (array) $entry_data);
 						
 						foreach($channel_fields as $channel_field)
 						{
 							$channel_field = (array) $channel_field;
 								
-							if(isset($row[$channel_field['field_name']]))
+							if(isset($row[$prefix.$channel_field['field_name']]) ||
+							   isset($row[$channel_field['field_name']]))
 							{
 								$row['field_id_'.$channel_field['field_id']] = $data;
 								$row['field_ft_'.$channel_field['field_id']] = $channel_field['field_fmt'];
