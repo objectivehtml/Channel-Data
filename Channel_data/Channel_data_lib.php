@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.7
- * @build		20121005
+ * @version		0.8.8
+ * @build		20121021
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -58,7 +58,7 @@ if(!class_exists('Channel_data_lib'))
 		{
 			foreach(array("or", "OR", 'and', 'AND') as $condition)
 			{
-				$field = trim(preg_replace('/^'.$condition.'/', '', $field));	
+				$field = trim(preg_replace('/^'.$condition.'\s/', '', $field));	
 			}
 			
 			foreach($this->conditionals as $condition)

@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* @version 0.8.7
-* @build   20121005
+* @version 0.8.8
+* @build   20121021
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.8.8 - 10/21/2012
+--------------------------
+- Fixed a bug that caused the strip_logic method to incorrectly change variable names.
 
 Version 0.8.7 - 10/04/2012
 --------------------------
