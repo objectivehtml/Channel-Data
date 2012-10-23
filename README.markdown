@@ -39,7 +39,7 @@ The add-on API framework allows you load third-party add-on API's. It can also h
 
 #### Example B - Loading Channel Data drivers
 	
-	$this->EE->load->channel_data->api->load('gmap');
+	$this->EE->channel_data->api->load('gmap');
 
 	$location = $this->EE->channel_data->gmap->geocode('MT Elbert');
 
