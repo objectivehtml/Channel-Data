@@ -31,7 +31,7 @@ The add-on API framework allows you load third-party add-on API's. It can also h
 
 #### Example A - Using the Channel Data Library
 
-	$this->EE->load->library('channel_data');
+	$this->EE->load->driver('channel_data');
 
 	$channels 	= $this->EE->channel_data->get_channels();
 	$entries    = $this->EE->channel_data->get_entries();
