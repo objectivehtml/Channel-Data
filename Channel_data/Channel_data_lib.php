@@ -873,17 +873,19 @@ if(!class_exists('Channel_data_lib'))
 			// appended to the query. Otherwise, all fields are appended.
 			
 			// also, restrict the query to the specified channel_id in the $where_array
-			
+
+            $where_array = array();
 			if($channel_id !== FALSE)
 			{
-				$where_array = array('channel_data.channel_id' => $channel_id);
-			
+                if(!is_array($channel_id)) {
+                    $where_array = array('channel_data.channel_id' => $channel_id);
+                }
+
 				$fields	 = $this->get_channel_fields($channel_id)->result();
 
-				if(is_array($where))
-					$where_array = array_merge($where_array, $where);
-				else
-					$where_array = array();
+				if(is_array($where)) {
+                    $where_array = array_merge($where_array, $where);
+                }
 			}
 			else
 			{
@@ -962,6 +964,10 @@ if(!class_exists('Channel_data_lib'))
 
 			$this->convert_params($params, FALSE, FALSE, FALSE, FALSE, FALSE, $debug);
 
+            if(is_array($channel_id))
+            {
+                $this->EE->db->where_in('channel_data.channel_id', $channel_id);
+            }
 
 			return $this->EE->db->get('channel_titles');
 		}
