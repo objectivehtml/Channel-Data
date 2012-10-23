@@ -871,11 +871,13 @@ if(!class_exists('Channel_data_lib'))
 
 			// If the channel_id is not false then only the specified channel fields are
 			// appended to the query. Otherwise, all fields are appended.
-
-			$where_array = array('channel_data.channel_id' => $channel_id);
-
+			
+			// also, restrict the query to the specified channel_id in the $where_array
+			
 			if($channel_id !== FALSE)
 			{
+				$where_array = array('channel_data.channel_id' => $channel_id);
+			
 				$fields	 = $this->get_channel_fields($channel_id)->result();
 
 				if(is_array($where))
