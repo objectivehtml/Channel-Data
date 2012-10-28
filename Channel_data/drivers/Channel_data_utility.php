@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.9
- * @build		20121026
+ * @version		0.8.10
+ * @build		20121028
  */
  
 class Channel_data_utility extends Channel_data_lib {

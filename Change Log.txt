@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* @version 0.8.9
-* @build   20121026
+* @version 0.8.10
+* @build   20121028
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.8.10 - 10/28/2012
+--------------------------
+- Fixed a bug in the tmpl parser that caused errors if module tags were nested within certain tag pairs.
 
 Version 0.8.9 - 10/26/2012
 --------------------------
