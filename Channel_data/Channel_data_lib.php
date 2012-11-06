@@ -125,7 +125,8 @@ if(!class_exists('Channel_data_lib'))
 		
 		public function build_operators($where = array(), $protect_identifiers = TRUE)
 		{			
-			$where_sql = array();
+			$where_sql = array();			
+			$concat    = NULL;
 			
 			foreach($where as $field => $values)
 			{
