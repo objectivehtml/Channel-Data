@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* @version 0.8.10
-* @build   20121028
+* @version 0.8.11
+* @build   20121106
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.8.11 - 11/06/2012
+--------------------------
+- Fixed a bug in the parse_path_variables method.
 
 Version 0.8.10 - 10/28/2012
 --------------------------

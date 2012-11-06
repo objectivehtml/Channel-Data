@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.10
- * @build		20121028
+ * @version		0.8.11
+ * @build		20121106
  */
  
 class Channel_data_tmpl extends Channel_data_lib {
@@ -210,17 +210,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 	
 	public function parse_path_variables($vars = array(), $entry_data = array(), $tagdata = FALSE, $prefix = '')
 	{		
-		if(!isset($vars['var_single']))
-		{
-			$vars['var_single'] = $vars;
-		}
-		
-		if(!is_array($vars['var_single']))
-		{
-			$vars['var_single'] = array();	
-		}
-		
-		foreach($vars['var_single'] as $key => $value)
+		foreach($vars as $key => $value)
 		{	
 			//  parse URL title path
 			if(strncmp($key, $prefix.'url_title_path', 14) == 0)
