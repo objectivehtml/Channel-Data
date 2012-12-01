@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* @version 0.8.11
-* @build   20121106
+* @version 0.8.12
+* @build   20121201
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.8.12 - 12/01/2012
+--------------------------
+- Added the ability to perform multiple joins.
 
 Version 0.8.11 - 11/06/2012
 --------------------------
