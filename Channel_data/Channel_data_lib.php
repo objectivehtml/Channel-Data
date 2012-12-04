@@ -1109,7 +1109,6 @@ if(!class_exists('Channel_data_lib'))
 			if($channel_id !== FALSE)
 			{
 				$where_array = array('channel_data.channel_id' => $channel_id);
-
 				$fields	 = $this->get_channel_fields($channel_id)->result();
 			}
 			else
@@ -1122,7 +1121,7 @@ if(!class_exists('Channel_data_lib'))
 			{
 				$where_array = array_merge($where_array, $where);
 			}	
-				
+			
 			$field_array = array();
 			
 			foreach($fields as $field)
