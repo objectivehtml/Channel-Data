@@ -1801,6 +1801,11 @@ if(!class_exists('Channel_data_lib'))
 								
 								foreach($param as $row)
 								{
+									if(!is_array($row))
+									{
+										$row = array($index => $row);
+									}
+									
 									foreach($row as $table => $on)
 									{
 										$this->EE->db->join($table, $on);

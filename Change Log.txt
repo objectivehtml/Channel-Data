@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* @version 0.8.12
-* @build   20121201
+* @version 0.8.13
+* @build   20121213
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.8.13 - 12/13/2012
+--------------------------
+- Added error tolerance to Channel Data JOIN's. Now accepts arrays, index arrays, and strings.
 
 Version 0.8.12 - 12/01/2012
 --------------------------
