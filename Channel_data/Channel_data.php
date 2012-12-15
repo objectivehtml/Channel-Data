@@ -20,8 +20,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.11
- * @build		20121106
+ * @version		0.8.14
+ * @build		20121215
  */
 
 

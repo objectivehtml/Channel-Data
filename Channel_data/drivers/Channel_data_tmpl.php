@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.11
- * @build		20121106
+ * @version		0.8.14
+ * @build		20121215
  */
  
 class Channel_data_tmpl extends Channel_data_lib {
@@ -171,6 +171,8 @@ class Channel_data_tmpl extends Channel_data_lib {
 		}
 		
 		$TMPL = $this->EE->channel_data->tmpl->create_alias($tagdata);
+		
+		$this->EE->TMPL->template = $this->EE->functions->prep_conditionals($this->EE->TMPL->template, $entry_data);
 		
 		$this->EE->TMPL->template = $this->EE->TMPL->parse_variables($this->EE->TMPL->template, $parse_vars);
 		

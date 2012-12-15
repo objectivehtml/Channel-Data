@@ -1,11 +1,15 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* @version 0.8.13
-* @build   20121213
+* @version 0.8.14
+* @build   20121215
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.8.14 - 12/15/2012
+--------------------------
+- Fixed a bug that prevented the conditionals from getting prepared correctly.
 
 Version 0.8.13 - 12/13/2012
 --------------------------
