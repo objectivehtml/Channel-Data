@@ -11,8 +11,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.14
- * @build		20121215
+ * @version		0.8.15
+ * @build		20121216
  */
  
 class Channel_data_tmpl extends Channel_data_lib {
@@ -172,7 +172,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 		
 		$TMPL = $this->EE->channel_data->tmpl->create_alias($tagdata);
 		
-		$this->EE->TMPL->template = $this->EE->functions->prep_conditionals($this->EE->TMPL->template, $entry_data);
+		$this->EE->TMPL->template = $this->EE->functions->prep_conditionals($this->EE->TMPL->template, array_merge($parse_vars, (array) $entry_data));
 		
 		$this->EE->TMPL->template = $this->EE->TMPL->parse_variables($this->EE->TMPL->template, $parse_vars);
 		
@@ -357,7 +357,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 					
 					if($this->EE->api_channel_fields->setup_handler($field_id))
 					{
-						$channel = isset($channels[$entry_data->{$prefix.'channel_id'}]) ? $channels[$entry_data->{$prefix.'channel_id'}] : $channels[$entry_data->channel_id];
+						$channel = isset($entry_data->{$prefix.'channel_id'}) ? $channels[$entry_data->{$prefix.'channel_id'}] : $channels[$entry_data->channel_id];
 						
 						$row = array_merge((array) $channel, (array) $entry_data);
 						

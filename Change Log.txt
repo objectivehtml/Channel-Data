@@ -1,11 +1,19 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* @version 0.8.14
-* @build   20121215
+* @version 0.8.15
+* @build   20121217
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
+
+Version 0.8.16 - 12/15/2012
+--------------------------
+- Fixed a bug that caused OR operators to not work properly
+
+Version 0.8.15 - 12/15/2012
+--------------------------
+- Fixed a bug created in the last version.
 
 Version 0.8.14 - 12/15/2012
 --------------------------

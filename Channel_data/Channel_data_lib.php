@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.14
- * @build		20121215
+ * @version		0.8.16
+ * @build		20121218
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -123,11 +123,11 @@ if(!class_exists('Channel_data_lib'))
 			return $concat . $this->remove_conditionals($field) . $this->assign_conditional($field) . $this->EE->db->escape($value) ;
 		}
 		
-		public function build_operators($where = array(), $protect_identifiers = TRUE)
+		public function build_operators($where = array(), $protect_identifiers = TRUE, $debug = FALSE)
 		{			
 			$where_sql = array();			
 			$concat    = NULL;
-			
+										
 			foreach($where as $field => $values)
 			{
 				$field_name = $field;
@@ -154,7 +154,6 @@ if(!class_exists('Channel_data_lib'))
 					
 					$concat = $this->build_concat($field);
 				
-			
 					foreach($value as $where_val)
 					{		
 						$field_sql[] = $this->build_operator($field, $where_val, $protect_identifiers);	
@@ -163,9 +162,9 @@ if(!class_exists('Channel_data_lib'))
 				
 				$sql = trim(implode(' ', $field_sql));
 				
+					
 				$where_sql[] = str_replace('()', '', $concat . '('.trim(ltrim(ltrim($sql, 'AND'), 'OR')).')');
 			}
-			
 			
 			$sql = trim(implode('', $where_sql));
 			$sql = preg_replace("/^(AND|OR)|(AND|OR)$/", '', trim($sql));
@@ -244,6 +243,8 @@ if(!class_exists('Channel_data_lib'))
 					{
 						if(preg_match('/^'.$word.'\s/', strtolower($index), $matches))
 						{
+							$matches[0] = trim($matches[0]);
+							
 							if($matches[0] == 'or')
 							{
 								$operator = $matches[0].' ';
@@ -262,7 +263,6 @@ if(!class_exists('Channel_data_lib'))
 						
 						//$index = trim(preg_replace('/'.$condition.'/', '', $index));
 					}
-						
 					if(isset($field_array[$index]))
 					{
 						$field_array[$index] = (object) $field_array[$index];
@@ -273,8 +273,8 @@ if(!class_exists('Channel_data_lib'))
 					}
 					else
 					{
-						$statements[$index][] = $value;
-					}				
+						$statements[$operator.$index][] = $value;
+					}					
 				}
 				
 				$where_array[] = $statements;
@@ -1128,9 +1128,9 @@ if(!class_exists('Channel_data_lib'))
 			{
 				$field_array[$field->field_name] = $field;
 			}
-
+							
 			$select = $this->build_select($fields, 'channel_titles.', 'channel_data.');	
-			$where  = $this->build_where($where_array, $field_array);
+			$where  = $this->build_where($where_array, $field_array, $debug);
 			
 			// Joins the channel_data table
 
@@ -1758,21 +1758,26 @@ if(!class_exists('Channel_data_lib'))
 							break;
 
 						case 'where':
-							$sql = $this->build_operators($param);
-
+							$sql = $this->build_operators($param, TRUE, $debug);
+							
 							if(!empty($sql)) $this->EE->db->where($sql, FALSE, FALSE);
 
 							break;
 
 						case 'order_by':
 							if(!is_array($param))
+							{
 								$param = array($param);
-
+							}
+							
 							foreach($param as $param)
 							{
 								$sort = isset($sort) ? $sort : 'DESC';
 
-								$this->EE->db->order_by($param, $sort);
+								if($param)
+								{
+									$this->EE->db->order_by($param, $sort);
+								}
 							}
 
 							break;
@@ -1837,7 +1842,7 @@ if(!class_exists('Channel_data_lib'))
 											unset($params['where'][$field]);
 
 											//$where_field 	=  preg_replace("/^or.+/", "", $field);
-
+											
 											$where_field 	= trim(str_replace(array("or ", "OR "), '', $field));
 											$concat 		= ' OR ';
 										}
