@@ -37,9 +37,9 @@ if(!class_exists('Channel_data_lib'))
 
 		private $reserved_terms = array(
 			'select', 'like', 'or_like', 'or_where', 'where', 'where_in',
-			'order_by', 'sort', 'limit', 'offset', 'join', 'having', 'group_by'
+			'order_by', 'sort', 'limit', 'offset', 'join', 'left join', 'inner join', 'outer join', 'having', 'group_by'
 		);
-
+		
 		/**
 		 * Construct
 		 *
@@ -1150,7 +1150,7 @@ if(!class_exists('Channel_data_lib'))
 				'offset'	=> $offset
 			);
 			
-			foreach(array('join', 'having', 'group_by') as $keyword)
+			foreach(array('join', 'inner join', 'left join', 'outer join', 'having', 'group_by') as $keyword)
 			{
 				if(isset($$keyword))
 				{
@@ -1724,7 +1724,7 @@ if(!class_exists('Channel_data_lib'))
 				'offset'	=> $offset
 			);
 
-			foreach(array('join', 'having', 'group_by') as $keyword)
+			foreach(array('join', 'inner join', 'left join', 'outer join', 'having', 'group_by') as $keyword)
 			{
 				if(isset($$keyword))
 				{
@@ -1738,136 +1738,121 @@ if(!class_exists('Channel_data_lib'))
 				{
 					$param = $params[$term];
 
-					switch ($term)
+					if($term == 'select')
 					{
-						case 'select':
+						if(!is_array($param))
+							$param = array($param);
 
 
-							if(!is_array($param))
-								$param = array($param);
+						foreach($param as $select)
+						{
+							$this->EE->db->select($select);
+						}
+					}
+					else if($term == 'where')
+					{
+						$sql = $this->build_operators($param, TRUE, $debug);
+						
+						if(!empty($sql)) $this->EE->db->where($sql, FALSE, FALSE);
+					}
+					else if('order_by')
+					{
+						if(!is_array($param))
+						{
+							$param = array($param);
+						}
+						
+						foreach($param as $param)
+						{
+							$sort = isset($sort) ? $sort : 'DESC';
 
-
-							foreach($param as $select)
+							if($param)
 							{
-								//$select = $this->check_ambiguity($select);
-
-								$this->EE->db->select($select);
+								$this->EE->db->order_by($param, $sort);
 							}
+						}
+						
+					}
+					else if('limit')
+					{
+					
+						if(!is_array($param))
+							$param = array($param);
 
+						$offset = isset($param['offset']) ? $param['offset'] : $offset;
+						$offset	= $offset !== FALSE ? $offset : 0;
 
-							break;
+						foreach($param as $param)
+							$this->EE->db->limit($param, $offset);
 
-						case 'where':
-							$sql = $this->build_operators($param, TRUE, $debug);
+					}
+					else if(preg_match('/^(\w*|)( |)join/', $term, $matches))
+					{
+						if(is_array($param))
+						{
+							if(count($param) == 1)
+							{
+								$param = array($param);
+							}
 							
-							if(!empty($sql)) $this->EE->db->where($sql, FALSE, FALSE);
-
-							break;
-
-						case 'order_by':
-							if(!is_array($param))
+							foreach($param as $row)
 							{
-								$param = array($param);
-							}
-							
-							foreach($param as $param)
-							{
-								$sort = isset($sort) ? $sort : 'DESC';
-
-								if($param)
+								if(!is_array($row))
 								{
-									$this->EE->db->order_by($param, $sort);
-								}
-							}
-
-							break;
-
-						case 'limit':
-							if(!is_array($param))
-								$param = array($param);
-
-							$offset = isset($param['offset']) ? $param['offset'] : $offset;
-							$offset	= $offset !== FALSE ? $offset : 0;
-
-							foreach($param as $param)
-								$this->EE->db->limit($param, $offset);
-
-
-							break;
-
-						case 'join':
-
-							if(is_array($param))
-							{
-								if(count($param) == 1)
-								{
-									$param = array($param);
+									$row = array($index => $row);
 								}
 								
-								foreach($param as $row)
+								foreach($row as $table => $on)
 								{
-									if(!is_array($row))
+									$this->EE->db->join($table, $on, !empty($matches[1]) ? $matches[1] : false);
+								}
+							}
+						}
+					}
+					else if($term == 'having')
+					{
+						if(is_array($param))
+						{
+							$having_sql = array();
+
+							foreach($param as $field => $value)
+							{
+								$field = preg_replace('/\{+\d+\}/', '', $field);
+								if(!is_array($value)) $value = array($value);
+
+								foreach($value as $where_val)
+								{
+									$where_field = trim($field);
+
+									$concat = ' AND ';
+
+									if(preg_match("/(^or.+)|(^OR.+)/", $where_field))
 									{
-										$row = array($index => $row);
+										unset($params['where'][$field]);
+
+										//$where_field 	=  preg_replace("/^or.+/", "", $field);
+										
+										$where_field 	= trim(str_replace(array("or ", "OR "), '', $field));
+										$concat 		= ' OR ';
 									}
-									
-									foreach($row as $table => $on)
-									{
-										$this->EE->db->join($table, $on);
-									}
+
+									$having_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field)  .  $this->EE->db->escape($where_val);
+
 								}
 							}
 
-							break;
+							$sql = trim(implode(' ', $having_sql));
+							$sql = trim(ltrim(ltrim($sql, 'AND'), 'OR'));
 
-						case 'having':
-
-							if(is_array($param))
-							{
-								$having_sql = array();
-
-								foreach($param as $field => $value)
-								{
-									$field = preg_replace('/\{+\d+\}/', '', $field);
-									if(!is_array($value)) $value = array($value);
-
-									foreach($value as $where_val)
-									{
-										$where_field = trim($field);
-
-										$concat = ' AND ';
-
-										if(preg_match("/(^or.+)|(^OR.+)/", $where_field))
-										{
-											unset($params['where'][$field]);
-
-											//$where_field 	=  preg_replace("/^or.+/", "", $field);
-											
-											$where_field 	= trim(str_replace(array("or ", "OR "), '', $field));
-											$concat 		= ' OR ';
-										}
-
-										$having_sql[] =  $concat . $this->remove_conditionals($this->EE->db->protect_identifiers($where_field)) . $this->assign_conditional($where_field)  .  $this->EE->db->escape($where_val);
-
-									}
-								}
-
-								$sql = trim(implode(' ', $having_sql));
-								$sql = trim(ltrim(ltrim($sql, 'AND'), 'OR'));
-
-								if(!empty($sql)) $this->EE->db->having($sql, FALSE, FALSE);
-							}
-
-							break;
-
-						case 'group_by':
-
-							if(is_string($param))
-							{
-								$this->EE->db->group_by($param);
-							}
-
-							break;
+							if(!empty($sql)) $this->EE->db->having($sql, FALSE, FALSE);
+						}
+					}
+					else if($term ==  'group_by')
+					{
+						if(is_string($param))
+						{
+							$this->EE->db->group_by($param);
+						}
 					}
 				}
 			}
