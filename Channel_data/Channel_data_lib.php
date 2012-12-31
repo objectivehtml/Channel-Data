@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.16
- * @build		20121218
+ * @version		0.8.17
+ * @build		20121231
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -1702,7 +1702,6 @@ if(!class_exists('Channel_data_lib'))
 				unset($select);
 
 				$keywords = $this->reserved_terms;
-
 				foreach($keywords as $keyword)
 				{
 					$$keyword = isset($subject[$keyword]) ? $subject[$keyword] : (isset($$keyword) ? $$keyword : NULL);
@@ -1755,14 +1754,14 @@ if(!class_exists('Channel_data_lib'))
 						
 						if(!empty($sql)) $this->EE->db->where($sql, FALSE, FALSE);
 					}
-					else if('order_by')
+					else if($term == 'order_by')
 					{
 						if(!is_array($param))
 						{
-							$param = array($param);
+							$params = array($param);
 						}
 						
-						foreach($param as $param)
+						foreach($params as $param)
 						{
 							$sort = isset($sort) ? $sort : 'DESC';
 
@@ -1773,7 +1772,7 @@ if(!class_exists('Channel_data_lib'))
 						}
 						
 					}
-					else if('limit')
+					else if($term == 'limit')
 					{
 					
 						if(!is_array($param))
