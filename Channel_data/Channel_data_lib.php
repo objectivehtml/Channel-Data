@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.17
- * @build		20121231
+ * @version		0.8.18
+ * @build		20120104
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -1232,9 +1232,13 @@ if(!class_exists('Channel_data_lib'))
 			// Selects the appropriate field name and converts where converts
 			// where parameters to their corresponding m_field_id's
 			foreach($fields as $field)
-			{
-				if(is_array($select))
-					$select[] = 'm_field_id_'.$field->m_field_id.' as \''.$field->m_field_name.'\'';
+			{			
+				if(!is_array($select))
+				{
+					$select = array($select);
+				}
+				
+				$select[] = 'm_field_id_'.$field->m_field_id.' as \''.$field->m_field_name.'\'';
 
 				foreach($where as $index => $value)
 				{
@@ -1266,41 +1270,6 @@ if(!class_exists('Channel_data_lib'))
 			$this->convert_params($params, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE);
 
 			return $this->EE->db->get('members');
-
-
-			foreach($fields as $field)
-			{
-				$field_array[$field->m_field_name] = $field;
-				$field_select[] = 'm_field_'.$field->m_field_id.' as \''.$field->m_field_name.'\'';
-			}
-
-			if($this->is_polymorphic($select))
-			{
-				if(isset($select['select']))
-				{
-					$select_array = $select['select'];
-
-					if(!is_array($select['select']))
-					{
-						$select_array = array($select['select']);
-					}
-
-					$select['select'] = array_merge($select_array, $field_select);
-				}
-			}
-			else
-			{
-				if(!is_array($select))
-				{
-					$select = array($select);
-				}
-
-				$select = array_merge($select, $field_select);
-			}
-
-			$this->EE->db->join('member_data', 'members.member_id = member_data.member_id');
-
-			return $this->get('members', $select, $where, $order_by, $sort, $limit, $offset);
 		}
 
 		/**
@@ -1736,7 +1705,7 @@ if(!class_exists('Channel_data_lib'))
 				if(isset($params[$term]) && $params[$term] !== FALSE)
 				{
 					$param = $params[$term];
-
+					
 					if($term == 'select')
 					{
 						if(!is_array($param))
@@ -1758,10 +1727,10 @@ if(!class_exists('Channel_data_lib'))
 					{
 						if(!is_array($param))
 						{
-							$params = array($param);
+							$order_params = array($param);
 						}
 						
-						foreach($params as $param)
+						foreach($order_params as $param)
 						{
 							$sort = isset($sort) ? $sort : 'DESC';
 
