@@ -502,7 +502,7 @@ class Channel_data_tmpl extends Channel_data_lib {
 							
 						foreach($entry_data as $index => $value)
 						{
-							if(isset($channel_fields[$index]) && isset($channel_fields[$index]->field_id) && !isset($row['field_id_'.$channel_fields[$index]->field_id]))
+							if(isset($channel_fields[$index]) && is_object($channel_fields[$index]) && isset($channel_fields[$index]->field_id) && !isset($row['field_id_'.$channel_fields[$index]->field_id]))
 							{
 								$row['field_id_'.$channel_fields[$index]->field_id] = $value;
 								$row['field_ft_'.$channel_fields[$index]->field_id] = $channel_fields[$index]->field_fmt;	
