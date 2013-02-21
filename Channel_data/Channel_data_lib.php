@@ -391,7 +391,7 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 
-		public function get_category_entries($select = array(), $where = array(), $order_by = 'cat_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		public function get_category_entries($select = array(), $where = array(), $order_by = 'categories.cat_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{
 			$fields 		= $this->get_category_fields()->result();
 			$field_array	= array();
