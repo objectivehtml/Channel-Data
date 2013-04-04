@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.19
- * @build		20120215
+ * @version		0.8.20
+ * @build		20120404
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -73,7 +73,7 @@ if(!class_exists('Channel_data_lib'))
 		{
 			$return = FALSE;
 			
-			if(preg_match("/((^|\s)or.+)|((^|\s)OR.+)/", $field))
+			if(preg_match("/((^|\s)or\s.+)|((^|\s)OR\s.+)/", $field))
 			{
 				$return = TRUE;	
 			}
@@ -1810,7 +1810,7 @@ if(!class_exists('Channel_data_lib'))
 
 									$concat = ' AND ';
 
-									if(preg_match("/(^or.+)|(^OR.+)/", $where_field))
+									if(preg_match("/(^or\s.+)|(^OR\s.+)/", $where_field))
 									{
 										unset($params['where'][$field]);
 
