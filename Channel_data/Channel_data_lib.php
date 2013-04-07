@@ -1725,12 +1725,13 @@ if(!class_exists('Channel_data_lib'))
 					if($term == 'select')
 					{
 						if(!is_array($param))
+						{
 							$param = array($param);
-
+						}
 
 						foreach($param as $select)
 						{
-							$this->EE->db->select($select);
+							$this->EE->db->select($select, FALSE, TRUE);
 						}
 					}
 					else if($term == 'where')
