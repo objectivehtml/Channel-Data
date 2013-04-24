@@ -796,6 +796,7 @@ if(!class_exists('Channel_data_lib'))
 			return $this->get_fields(array(
 				'select' 	=> $select,
 				'where'		=> array(
+					'site_id'    => config_item('site_id'),
 					'field_name' => $field_name
 				)
 			));
