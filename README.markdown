@@ -15,12 +15,34 @@ Channel Data also provided a simple and effective interface for developers to in
 Table of Contents
 -----------------
 
-  1. [Basic Usage]( #basicusage "Go to Basic Usage")
-  2. [Polymorphic Parameters]( #polymorphicparameters "Go to 'Polymorphic Parameters' section")
-  3. [Channel Data Library]( #channeldatalibrary "Go to the 'Channel Data Library' section")
-  4. [What's to come?](#whatstocome "Go to the 'What's to come' section")
-  5. [Contributors](#contributors "Go to the 'Contributors' section")
-  6. [Disclaimer](#disclaimer "Go to the Disclaimer section")
+  1. [Installation]( #installation "Go to 'Installation' section")
+  2. [Basic Usage]( #basicusage "Go to 'Basic Usage' section")
+  3. [Polymorphic Parameters]( #polymorphicparameters "Go to 'Polymorphic Parameters' section")
+  4. [Channel Data Library]( #channeldatalibrary "Go to the 'Channel Data Library' section")
+  5. [What's to come?](#whatstocome "Go to the 'What's to come' section")
+  6. [Contributors](#contributors "Go to the 'Contributors' section")
+  7. [Disclaimer](#disclaimer "Go to the Disclaimer section")
+
+  
+  
+Installation
+------------
+
+Create a folder called /libraries in your addon directory. Download this repository into that folder and make sure its containing folder is named Channel_data (exactly as shown). 
+
+So your directory structure should look like the following:
+
+~~~~
+/my-addon
+    /libraries
+		/Channel_data
+			/drivers
+			Channel_data.php
+			Channel_data_lib.php
+			license.txt
+			README.markdown
+~~~~
+
 
 Basic Usage
 -----------
