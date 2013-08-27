@@ -15,7 +15,7 @@ Channel Data also provided a simple and effective interface for developers to in
 Table of Contents
 -----------------
 
-  1. [Basic Usage]( #installation "Go to 'Installation' section")
+  1. [Installation]( #installation "Go to 'Installation' section")
   2. [Basic Usage]( #basicusage "Go to 'Basic Usage' section")
   3. [Polymorphic Parameters]( #polymorphicparameters "Go to 'Polymorphic Parameters' section")
   4. [Channel Data Library]( #channeldatalibrary "Go to the 'Channel Data Library' section")
