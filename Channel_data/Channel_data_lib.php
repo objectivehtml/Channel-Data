@@ -13,8 +13,8 @@
  * @author		Justin Kimbrell
  * @copyright	Copyright (c) 2012, Justin Kimbrell
  * @link 		http://www.objectivehtml.com/libraries/channel_data
- * @version		0.8.21
- * @build		20130906
+ * @version		0.8.22
+ * @build		20131204
  */
 
 if(!class_exists('Channel_data_lib'))
@@ -120,9 +120,10 @@ if(!class_exists('Channel_data_lib'))
 				$field = $this->EE->db->protect_identifiers($field);
 			}
 
-			$conditional = $this->assign_conditional($field);
+			$conditional     = $this->assign_conditional($field);
+			$alt_conditional = $this->assign_conditional(' '.trim($value));
 
-			if($conditional != ($alt_conditional = $this->assign_conditional(' '.trim($value))))
+			if($conditional != $alt_conditional && trim($alt_conditional) != '=')
 			{
 				$conditional = $alt_conditional;
 				$value       = $this->strip_logic($value);
@@ -178,7 +179,7 @@ if(!class_exists('Channel_data_lib'))
 					
 				$where_sql[] = str_replace('()', '', $concat . '('.trim(ltrim(ltrim($sql, 'AND'), 'OR')).')');
 			}
-			
+
 			$sql = trim(implode('', $where_sql));
 			$sql = preg_replace("/^(AND|OR)|(AND|OR)$/", '', trim($sql));
 			
