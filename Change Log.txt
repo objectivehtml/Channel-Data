@@ -1,14 +1,21 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* @version 0.8.15
-* @build   20121217
+* @version 1.0.0-rc1
+* @build   2014-12-10
 * Copyright 2012 - All rights reserved
 * http://objectivehtml.com
 */
 
+#### 2014-12-10
+##### 1.0.0-rc1
+
+- Complete rewrite of entire API. All new docs and syntax based on Eloquent.
+
+
 Version 0.8.16 - 12/15/2012
 --------------------------
+
 - Fixed a bug that caused OR operators to not work properly
 
 Version 0.8.15 - 12/15/2012
