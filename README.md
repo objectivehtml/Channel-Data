@@ -16,6 +16,7 @@ Created By [Objective HTML](https://objectivehtml.com)
 5. [QueryString](#querystring)
 5. [Collections](#collections)
 6. [Models](#models)
+6. [Channel Models](#channelmodels)
 
 ---
 
@@ -615,13 +616,37 @@ Channel Models extend the `BaseModel` class and are specifically built to work w
 
 ##### Properties
 
-#### $exists
+#### $apiResponse
 
-A public property that is `TRUE` is the model exists in the database. Is `FALSE` is the model has not been saved.
+If the API has saved or updated an entry, the response is saved here.
+
+#### $channel
+
+The name of the channel within ExpressionEngine.
+
+#### $errors
+
+An array of errors, if the entry failed to save or update.
+
+#### $fields
+
+An indexed array of channel fields.
+
+	$fields = array(  
+        // field_id => field_name
+		
+		5 => 'your_field_name'
+	);
+
+
+##### Instance Methods
+
+#### getErrors()
+
+Get the array of errors in the `$errors` property (which is protected).
 
 
 ##### Static Methods
-
 
 #### MyModel::findByUrlTitle()
 

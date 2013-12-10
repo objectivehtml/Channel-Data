@@ -9,7 +9,7 @@ use ChannelData\Component\ChannelEntriesApi;
 
 class ChannelModel extends BaseModel {
 
-	protected $apiResponse = NULL;
+	public $apiResponse = NULL;
 
 	protected $channel = FALSE;
 
