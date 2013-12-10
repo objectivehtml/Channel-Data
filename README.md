@@ -644,7 +644,7 @@ The name of the channel within ExpressionEngine.
 
 #### $errors
 
-An array of errors, if the entry failed to save or update.
+A protected property that stores an array of errors if the entry failed to save or update.
 
 #### $fields
 
