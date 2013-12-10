@@ -9,14 +9,14 @@ Created By [Objective HTML](https://objectivehtml.com)
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [System Requirements](#systemrequirements)
-3. [Getting Started](#gettingstarted)
+2. [System Requirements](#system-requirements)
+3. [Getting Started](#getting-started)
 4. [QueryBuilder](#querybuilder)
 4. [QueryResponse](#queryresponse)
 5. [QueryString](#querystring)
 5. [Collections](#collections)
 6. [Models](#models)
-6. [Channel Models](#channelmodels)
+6. [Channel Models](#channel-models)
 
 ---
 
