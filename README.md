@@ -22,9 +22,9 @@ Created By [Objective HTML](https://objectivehtml.com)
 
 ## Overview
 
-Channel Data was created to provide a universal and abstract set of models for you to use within your [ExpressionEngine](http://ellislab.com/expressionengine) applications. Channel Data is now based on the <a href="http://four.laravel.com/docs/eloquent">Eloquent ORM</a>, so the syntax should be familiar to those that have used it.
+Channel Data was created to provide a universal and abstract set of models for you to use within your [ExpressionEngine](http://ellislab.com/expressionengine) applications and addons. Channel Data is now based on the <a href="http://four.laravel.com/docs/eloquent">Eloquent ORM</a>, so the syntax should be familiar to those that have used it.
 
-Why did we just port Eloquent to ExpressionEngine? Others have done so, and it's definitely possible. However, after a lot of consideration, it was decided to rewrite the code from scratch specifically for ExpressionEngine. This will make it easier to integrate Channel Data into existing applications.
+Why didn't we just port Eloquent to ExpressionEngine? Others have done so, and it's definitely possible. However, after a lot of consideration, it was decided to rewrite the code from scratch specifically for ExpressionEngine. This will make it easier to integrate Channel Data into existing applications and maintain the codebase as ExpressionEngine evolves.
 
 ---
 
@@ -61,7 +61,7 @@ To get started using Channel Data, put the `ChannelData` directory in your add-o
 			- models
 				- [YOUR MODELS GO HERE]
 
-Once you get the files into your application, you need to instantiate ChannelData. Note, once you instantiate the library all the dependencies and models will be autoloaded.
+Once you get the files into your application, you need to instantiate Channel Data. Note, once you instantiate the library all the dependencies and models will be autoloaded.
 
 	ee()->load->driver('ChannelData');
 
@@ -71,7 +71,7 @@ Once you get the files into your application, you need to instantiate ChannelDat
 
 ## QueryBuilder
 
-QueryBuilder is a standalone class that provides a clean syntax for building SQL statements based on the Eloquent syntax. QueryBuilder can be used a standalone class, or within the [Models](#models) themselves.
+QueryBuilder is a standalone class that provides a clean syntax for building SQL statements based on the Eloquent ORM. QueryBuilder can be used as a standalone class, or within the [Models](#models) themselves.
 
 ### Instantiate
 
@@ -83,7 +83,9 @@ After you are finished building your query, you need to instantiate a `QueryResp
 
 	$response = $builder->get();
 
-Or you can skip the response and just grab the results. If a model has been defined, a `Collection` will be returned. Otherwise, an array of objects will be returned.
+Or you can skip the response and just grab the results. If a model has been defined, a `Collection` will be returned. Otherwise, an array of standard objects will be returned.
+
+	$response = $builder->result();
 
 ### Select
 
@@ -214,21 +216,20 @@ Or you can skip the response and just grab the results. If a model has been defi
 
 ## QueryResponse
 
-`QueryResponse` is a class that instantiated when the `response` method is ran on the `QueryResponse` object. If a model runs a query, the data is used to instantiate a collection.
-
+`QueryResponse` is a class that is instantiated when the `get` method is ran on the `QueryResponse` object.
 
 ### count()
 
 Returns the total number of items in the response
 	
-	$response = $builder->response();
+	$response = $builder->get();
 	$response->count();
 
 ### each()
 
 This method loops through the entire collection and passes each item to a closure.
 
-	$response = $builder->response();
+	$response = $builder->get();
 	
 	$response->each(function($i, $row) {
 		$row->some_field = 'Some new value';
@@ -238,7 +239,7 @@ This method loops through the entire collection and passes each item to a closur
 
 This method returns the first row in the result array
 	
-	$response = $builder->response();
+	$response = $builder->get();
 	
 	$row = $response->first();
 
@@ -246,7 +247,7 @@ This method returns the first row in the result array
 
 This method returns the last row in the result array
 
-	$response = $builder->response();
+	$response = $builder->get();
 	
 	$row = $response->last();
 
@@ -254,7 +255,7 @@ This method returns the last row in the result array
 
 This method returns a row in the result by index, or if no index is exists, NULL will be returned.
 	
-	$response = $builder->response();
+	$response = $builder->get();
 	
 	$row = $response->index(2);
 
@@ -262,7 +263,7 @@ This method returns a row in the result by index, or if no index is exists, NULL
 
 This method returns the next row in the result set.
 	
-	$response = $builder->response();
+	$response = $builder->get();
 	
 	$row = $response->next();
 
@@ -270,7 +271,7 @@ This method returns the next row in the result set.
 
 This method returns the previous row in the result set.
 	
-	$response = $builder->response();
+	$response = $builder->get();
 	
 	$row = $response->next();
 
@@ -278,7 +279,7 @@ This method returns the previous row in the result set.
 
 This method returns the result array
 	
-	$response = $builder->response();
+	$response = $builder->get();
 	
 	$row = $response->result();
 
@@ -286,7 +287,7 @@ This method returns the result array
 
 This method returns the first row in the result array
 	
-	$response = $builder->response();
+	$response = $builder->get();
 	
 	$row = $response->row();
 
@@ -295,7 +296,7 @@ This method returns the first row in the result array
 
 ## QueryString
 
-`QueryString` is a class that can be passed into any parameter in QueryBuilder to output a raw string. `QueryString` also has a number of static helper method to manipulate strings for use within SQL.
+`QueryString` is a class that can be passed into any parameter that will output a raw string. `QueryString` also has a number of static helper methods to manipulate strings for common uses within SQL.
 
 ### Instantiate
 
@@ -542,7 +543,7 @@ Return the table that is being searched
 
 Returns the id of the model
 
-	$memberId = $member->id();;
+	$memberId = $member->id();
 
 ### uid()
 
