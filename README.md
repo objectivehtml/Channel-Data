@@ -613,6 +613,17 @@ Output the model as a JSON string
 
 Channel Models extend the `BaseModel` class and are specifically built to work with Channel Entries.
 
+	<?php
+
+	use ChannelData\Base\ChannelModel;
+
+	class School extends ChannelModel {
+
+		protected $channel = 'schools';
+
+		protected $prefix  = 'school_';
+	}
+
 
 ##### Properties
 
