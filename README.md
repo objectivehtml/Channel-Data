@@ -40,13 +40,17 @@ ExpressionEngine 2.4+
 
 ## Getting Started
 
-To get started using Channel Data, put the `ChannelData` directory in your add-on `libraries` directory, or in the global system `libraries` directory. It really doesn't matter where you put the Channel Data files, but packaging them with add-ons make things easier to install and distribute.
+To get started using Channel Data, put the `ChannelData` directory in your add-on `libraries` directory, or in the global system `libraries` directory. It really doesn't matter where you put the Channel Data files, but packaging them with add-ons make things easier to install and distribute. The main to remember is here, is you don't need them in *both* places.
 
 ##### Add-on file structure
 
 	- Your_addon
 		- libraries
 			- ChannelData
+		- models
+			- [YOUR MODELS GO HERE]
+			- channels
+				- [OPTIONALLY USE THE CHANNELS DIRECTORY TO ORGANIZE CRUD MODELS]
 
 ##### Global file structure
 
@@ -54,6 +58,8 @@ To get started using Channel Data, put the `ChannelData` directory in your add-o
 		- expressionengine
 			- libraries
 				- ChannelData
+			- models
+				- [YOUR MODELS GO HERE]
 
 Once you get the files into your application, you need to instantiate ChannelData. Note, once you instantiate the library all the dependencies and models will be autoloaded.
 
