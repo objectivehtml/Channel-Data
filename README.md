@@ -65,7 +65,7 @@ Once you get the files into your application, you need to instantiate ChannelDat
 
 ## QueryBuilder
 
-QueryBuilder is a standalone class that provides a clean syntax for building SQL statements based on the Eloquent syntax. The QueryBuilder can be used a standalone class, or within the [Models](#models) themselves.
+QueryBuilder is a standalone class that provides a clean syntax for building SQL statements based on the Eloquent syntax. QueryBuilder can be used a standalone class, or within the [Models](#models) themselves.
 
 ### Instantiate
 
