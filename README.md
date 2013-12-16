@@ -40,30 +40,39 @@ ExpressionEngine 2.4+
 
 ## Getting Started
 
-To get started using Channel Data, put the `ChannelData` directory in your add-on `libraries` directory, or in the global system `libraries` directory. It really doesn't matter where you put the Channel Data files, but packaging them with add-ons make things easier to install and distribute. The main to remember is here, is you don't need them in *both* places.
+To get started using Channel Data, you need to copy `channel_data` into your `system/expressionengine/third_party` directory. Channel Data is packages as its own *module* so you an reuse the same libary with all of your add-ons. This is also convenient when you upgrade ExpressionEngine since you don't have to worry about override files stored in the system directories.
 
-##### Add-on file structure
+Channel Data includes some core modules for you to use. Core models belong to the `ChannelData\Model` namespace, and can be reused within your application. You can create your own models using the following structure:
 
-	- Your_addon
-		- libraries
-			- ChannelData
-		- models
-			- [YOUR MODELS GO HERE]
-			- channels
-				- [OPTIONALLY USE THE CHANNELS DIRECTORY TO ORGANIZE CRUD MODELS]
 
-##### Global file structure
+##### Instantiate Channel Data
 
-	- system
-		- expressionengine
-			- libraries
-				- ChannelData
-			- models
-				- [YOUR MODELS GO HERE]
+The key thing to note when instantiating Channel Data is that you need to do 3 things.
 
-Once you get the files into your application, you need to instantiate Channel Data. Note, once you instantiate the library all the dependencies and models will be autoloaded.
+1. Load the Channel Data package into your add-on
+2. Load the Channel Data driver from the package
+3. Tell Channel Data where the auto loader should look for your files.
 
-	ee()->load->driver('ChannelData');
+	ee()->load->add_package_path(PATH_THIRD . 'your_addon_name');
+	
+	// Load the driver and directories at once
+
+	ee()->load->driver('ChannelData', array(
+		'directories' => array(
+			PATH_THIRD . 'your_addon_name/models'
+		)
+	));
+
+	// Or use the autoload() method to pass a directory path
+
+	ee()->channeldata->autoload(PATH_THIRD . 'your_addon_name/models');
+
+	// You can also pass an array of directories
+
+	ee()->channeldata->autoload(array(
+		PATH_THIRD . 'your_addon_name/models',
+		PATH_THIRD . 'your_addon_name/models/channels'
+	));
 
 *Note, Channel Data is a CodeIgniter driver, not a library. You must load it using the `driver` method.*
 
@@ -377,7 +386,7 @@ This method returns an array of instantiated model objects.
 
 	$members = Member::all();
 
-	foreach($members->$items as $i => $member)
+	foreach($members->$items() as $i => $member)
 	{
 		$member->some_field = 'Some new value';
 		$member->save();
@@ -399,11 +408,12 @@ This method returns the last model in the collection.
 	
 	$member = $members->last()
 
-### get($index = FALSE)
+### get($index = FALSE, $default = NULL)
 
 This method returns an item in the collection by index, or if no index is exists, all items will be returned.
 	
 	$member = Member::all()->get(2);
+	$member = Member::all()->get(12, 'some default value');
 
 ### count()
 

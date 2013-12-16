@@ -71,7 +71,7 @@ class QueryResponse {
 		return $this->_model($this->query->row());
 	}
 
-	private function _model($data)
+	protected function _model($data)
 	{
 		if($this->model) {
 			return new $this->model($data);
@@ -80,10 +80,10 @@ class QueryResponse {
 		return $data;
 	}
 
-	private function _collection($data)
+	protected function _collection($data)
 	{
 		if($this->model) {
-			return new Collection($data, $this->model);
+			return new Collection($data, $this, $this->model);
 		}
 
 		return $data;

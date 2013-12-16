@@ -1,6 +1,7 @@
 <?php namespace ChannelData\Model;
 
 use ChannelData\Base\BaseModel;
+use ChannelData\Component\QueryBuilder;
 
 class Member extends BaseModel {
 
@@ -18,9 +19,11 @@ class Member extends BaseModel {
 		'interests'
 	);
 
-	protected $guarded = array('member_id', 'group_id');
+	protected $guarded = array('member_id');
 
-	protected $hidden = array('member_id', 'group_id');
+	protected $hidden = array();
+
+	protected $memberFields = array();
 
 	public function __construct($data = array())
 	{
@@ -31,10 +34,11 @@ class Member extends BaseModel {
 
 		$self = $this;
 
-		MemberField::all()->each(function($i, $field) use($self, $data) {
+		$memberFields = MemberField::all();
+		$memberFields->each(function($i, $field) use($self, $data) {
 			$self->setAttribute($field->name(), $data->{$field->name()});
 		});
-
+		
 		parent::__construct($data);
 
 		if(isset($data->member_id))
@@ -46,6 +50,48 @@ class Member extends BaseModel {
 		{
 			$this->group_id = $data->group_id;
 		}
+	}
+
+	public function memberFields()
+	{
+		$self  = $this;
+		$array = array();
+
+		MemberField::all()->each(function($i, $field) use($self, &$array) {
+			$value = $self->getAttribute($field->name());
+
+			$array['m_field_id_'.$field->m_field_id] = $value;
+		});
+
+		return $array;
+	}
+
+	protected function _createRecord($data = array())
+	{
+		parent::_createRecord($data);
+
+		if(count($this->memberFields()))
+		{
+			ee()->db->insert('member_data', array_merge(
+				array('member_id' => $this->id()),
+				$this->memberFields()
+			));
+		}
+
+		return $this;
+	}
+
+	protected function _updateRecord($data = array())
+	{
+		parent::_updateRecord($data);
+
+		if(count($this->memberFields()))
+		{
+			ee()->db->where($this->idField, $this->id());
+			ee()->db->update('member_data', $this->memberFields());
+		}
+
+		return $this;
 	}
 
 	public static function query()

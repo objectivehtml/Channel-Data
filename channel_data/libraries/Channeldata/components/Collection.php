@@ -6,20 +6,33 @@ class Collection {
 
 	protected $builder;
 	
-	protected $query;
-	
 	protected $model;
+
+	protected $response;
 
 	protected $items = array();
 
-	public function __construct($data, $model)
+	public function __construct($data, $response, $model)
 	{
-		$this->model = $model;
+		$this->response = $response;
+		$this->model    = $model;
 
 		foreach($data as $index => $row)
 		{
 			$this->items[] = new $this->model($row);
 		}
+	}
+
+	public function ids()
+	{
+		$ids = array();
+
+		foreach($this->items as $item)
+		{
+			$ids[] = $item->id();
+		}
+
+		return $ids;
 	}
 
 	public function reindex($index)
@@ -64,9 +77,14 @@ class Collection {
 		return $this->get($this->count() - 1);
 	}
 
-	public function get($index = FALSE)
+	public function all()
 	{
-		return $index !== FALSE && isset($this->items[$index]) ? $this->items[$index] : $this->items;
+		return $this->items();
+	}
+
+	public function get($index = FALSE, $default = NULL)
+	{
+		return $index !== FALSE && isset($this->items[$index]) ? $this->items[$index] : NULL;
 	}
 
 	public function count()

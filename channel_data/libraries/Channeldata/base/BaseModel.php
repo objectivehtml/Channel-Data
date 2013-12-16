@@ -5,7 +5,7 @@ use ChannelData\Component\QueryBuilder;
 
 // namespace ChannelData;
 
-abstract class BaseModel extends \CI_Model {
+abstract class BaseModel {
 	
 	public $exists = FALSE;
 
@@ -31,6 +31,14 @@ abstract class BaseModel extends \CI_Model {
 
 	public function __construct($data = array(), $setId = TRUE)
 	{
+		foreach($this->columns() as $column)
+		{
+			if(!property_exists($this, $column))
+			{
+				$this->$column = NULL;
+			}
+		}
+
 		$this->fill($data);
 
 		if($setId && isset($data->{$this->idField}))
@@ -40,8 +48,9 @@ abstract class BaseModel extends \CI_Model {
 				$this->setAttribute($this->idField, $data->{$this->idField});	
 			}
 
-			if($this->uidField)
-			{
+
+			if($this->uidField && isset($data->{$this->uidField}))
+			{			
 				$this->setAttribute($this->uidField, $data->{$this->uidField});			
 			}
 		}
@@ -65,6 +74,8 @@ abstract class BaseModel extends \CI_Model {
 			return $this->{$prefix.$method};
 		}
 
+		throw new \Exception('"'.$method.'" is not a valid method', 1);
+	
 		return NULL;
 	}
 
@@ -93,11 +104,15 @@ abstract class BaseModel extends \CI_Model {
 		{
 			foreach($data as $index => $value)
 			{
+				if($this->prefix && property_exists($this, $this->prefix.$index))
+				{
+					$index = $this->prefix.$index;
+				}
+
 				if( in_array($index, $this->fillable) ||
 				    in_array($index, $this->required))
 				{
 					$this->setAttribute($index, $value);
-
 				}
 			}
 		}
@@ -124,11 +139,11 @@ abstract class BaseModel extends \CI_Model {
 	{
 		$array = array();
 
-		foreach($this->getAttributes() as $index => $value)
+		foreach($this->columns() as $index)
 		{
 			if(!in_array($index, $this->hidden))
 			{
-				$array[$index] = $this->$index;
+				$array[$index] = $this->getAttribute($index);
 			}
 		}
 
@@ -168,11 +183,11 @@ abstract class BaseModel extends \CI_Model {
 	{
 		$return = array();
 
-		foreach($this->columns() as $index)
+		foreach($this as $prop => $index)
 		{
-			if(property_exists($this, $index))
+			if(property_exists($this, $prop))
 			{
-				$return[$index] = $this->$index;
+				$return[$prop] = $this->getAttribute($prop);
 			}
 		}
 
@@ -289,7 +304,7 @@ abstract class BaseModel extends \CI_Model {
 			return $this->columns;
 		}
 
-		return ee()->db->list_fields($this->table);
+		return $this->columns = ee()->db->list_fields($this->table);
 	}
 
 	public static function create($array)
@@ -337,6 +352,27 @@ abstract class BaseModel extends \CI_Model {
 		$class = self::caller();
 
 		return $class::query()->where($subject, $operator, $value, $concat);
+	}
+
+	public static function whereIn($subject, $value = NULL)
+	{
+		$class = self::caller();
+
+		return $class::query()->whereIn($subject, $value);
+	}
+
+	public static function orWhereIn($subject, $value = NULL)
+	{
+		$class = self::caller();
+
+		return $class::query()->orWhereIn($subject, $value);
+	}
+
+	public static function andWhereIn($subject, $value = NULL)
+	{
+		$class = self::caller();
+
+		return $class::query()->andWhereIn($subject, $value);
 	}
 
 	public static function orWhere($subject, $operator = NULL, $value =  NULL)

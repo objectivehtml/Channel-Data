@@ -59,9 +59,26 @@ class Channel extends BaseModel {
 
 	protected $guarded = array('channel_id');
 
+	public function name()
+	{
+		return $this->channel_name;
+	}
+
 	public function fields()
 	{
 		return ChannelField::findByGroup($this->field_group);
+	}
+
+	public static function findByEntry($entry_id)
+	{
+		$title = ChannelTitle::find($entry_id);
+
+		if(!$title)
+		{
+			return NULL;
+		}
+
+		return Channel::find($title->channel_id);
 	}
 
 	public static function findByName($name)

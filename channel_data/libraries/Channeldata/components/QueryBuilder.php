@@ -183,10 +183,13 @@ class QueryBuilder {
 		}
 		else
 		{
-			if(strtoupper($value) == 'AND' || strtoupper($value) == 'OR')
+			if(is_string($value))
 			{
-				$concat = $value;
-				$value  = NULL;
+				if(strtoupper($value) == 'AND' || strtoupper($value) == 'OR')
+				{
+					$concat = $value;
+					$value  = NULL;
+				}
 			}
 
 			if(!is_null($operator) && is_null($value))

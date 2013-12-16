@@ -16,6 +16,44 @@ class QueryString {
 		return $this->str;
 	}
 
+	public static function url_title($str, $separator = 'dash', $lowercase = TRUE)
+	{
+		if (UTF8_ENABLED)
+		{
+			$CI =& get_instance();
+			$CI->load->helper('text');
+
+			$str = utf8_decode($str);
+			$str = preg_replace_callback('/(.)/', 'convert_accented_characters', $str);			
+		}
+		
+		$separator = ($separator == 'dash') ? '-' : '_';
+
+		$trans = array(
+						'&\#\d+?;'					=> '',
+						'&\S+?;'					=> '',
+						'\s+|/+'					=> $separator,
+						'[^a-z0-9\-\._]'			=> '',
+						$separator.'+'				=> $separator,
+						'^[-_]+|[-_]+$'				=> '',
+						'\.+$'						=> ''
+					  );
+
+		$str = strip_tags($str);
+
+		foreach ($trans as $key => $val)
+		{
+			$str = preg_replace("#".$key."#i", $val, $str);
+		}
+
+		if ($lowercase === TRUE)
+		{
+			$str = strtolower($str);
+		}
+		
+		return trim(stripslashes($str));
+	}
+
 	public static function protect($str, $table = FALSE)
 	{
 		if(!is_object($str))

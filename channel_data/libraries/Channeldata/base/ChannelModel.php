@@ -3,13 +3,14 @@
 use ChannelData\Base\BaseModel;
 use ChannelData\Model\Channel;
 use ChannelData\Component\ChannelQueryBuilder;
+use ChannelData\Component\QueryString;
 use ChannelData\Component\ChannelEntriesApi;
 
 // namespace ChannelData;
 
 class ChannelModel extends BaseModel {
 
-	public $apiResponse = NULL;
+	protected $apiResponse = NULL;
 
 	protected $channel = FALSE;
 
@@ -26,7 +27,32 @@ class ChannelModel extends BaseModel {
 		'status'
 	);
 
-	protected $fillable = array('title');
+	protected $fillable = array(
+		'site_id',
+		'channel_id',
+		'author_id',
+		'forum_topic_id',
+		'ip_address',
+		'title',
+		'url_title',
+		'status',
+		'versioning_enabled',
+		'view_count_one',
+		'view_count_two',
+		'view_count_three',
+		'view_count_four',
+		'allow_comments',
+		'sticky',
+		'entry_date',
+		'year',
+		'month',
+		'day',
+		'expiration_date',
+		'comment_expiration_date',
+		'edit_date',
+		'recent_comment_date',
+		'comment_total'
+	);
 
 	protected $table = 'channel_data';
 
@@ -38,12 +64,24 @@ class ChannelModel extends BaseModel {
 
 	public function __construct($data = array())
 	{
+		ee()->lang->loadfile('content');
+		
 		$this->uidField   = $this->prefix.'uid';
 		$this->required[] = $this->prefix.'uid';
 
 		$this->fillable = array_merge($this->fillable, $this->fields());
 
 		parent::__construct($data);
+	}
+
+	public function __get($property)
+	{
+		if(property_exists($this, $this->prefix.$property))
+		{
+			return $this->{$this->prefix.$property};
+		}
+
+		throw new \Exception("Invalid property \'".$property."\'", 1);
 	}
 
 	public function __set($property, $value)
@@ -57,13 +95,18 @@ class ChannelModel extends BaseModel {
 
 		if($property == 'title')
 		{
-			$this->url_title = url_title(strtolower($this->title));
+			$this->url_title = QueryString::url_title(strtolower($this->title));
 		}
 	}
 
 	public function getErrors()
 	{
 		return $this->errors;
+	}
+
+	public function hasErrors()
+	{
+		return count($this->errors) ? TRUE : FALSE;
 	}
 
 	public function channel()
@@ -171,10 +214,19 @@ class ChannelModel extends BaseModel {
 		return $this->fields;
 	}
 
+	public static function findByAuthorId($author_id)
+	{
+		return self::where('author_id', '=', $author_id)->get();
+	}
 
 	public static function findByUrlTitle($urlTitle)
 	{
-		return self::init(Course::where(array('url_title' => $urlTitle)));
+		if($urlTitle === FALSE)
+		{
+			return NULL;
+		}
+
+		return self::where('url_title', '=', $urlTitle)->get()->first();
 	}
 
 	public static function channelId()
@@ -213,6 +265,11 @@ class ChannelModel extends BaseModel {
 		foreach($class->fields() as $field_id => $field_name)
 		{
 			$query->select('field_id_'.$field_id, $field_name, 'channel_data');
+		}
+
+		if($class->channelId()) 
+		{
+			$query->where('channel_data.channel_id', '=', $class->channelId());
 		}
 
 		return $query;

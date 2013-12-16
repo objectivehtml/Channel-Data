@@ -2,6 +2,8 @@
 
 // namespace ChannelData;
 
+use ChannelData\Response\ChannelResponse;
+
 class ChannelQueryBuilder extends QueryBuilder {
 	
 	public function future($date = FALSE)
@@ -52,6 +54,11 @@ class ChannelQueryBuilder extends QueryBuilder {
 	public function notOpen()
 	{
 		return $this->where('status', '!=', 'open');
+	}
+
+	public function get()
+	{
+		return new ChannelResponse($this, $this->model);
 	}
 
 }

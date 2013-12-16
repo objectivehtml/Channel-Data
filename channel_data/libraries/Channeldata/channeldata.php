@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 function __autoLoad($className)
 {
@@ -35,7 +35,22 @@ function __autoLoad($className)
 				require_once($filePath);
 			}
 		}
+
+
+		if(isset(ee()->channeldata))
+		{
+			foreach(ee()->channeldata->directories() as $directory)
+			{
+				$filePath  = $directory . '/' . $fileName;
+
+				if(file_exists($filePath))
+				{
+					require_once($filePath);
+				}
+			}
+		}
 	}
+
 }
 
 if(!function_exists('is_closure'))
@@ -54,4 +69,39 @@ if(!function_exists('is_closure'))
  * @return	void
  */
 
-class ChannelData {}
+
+use ChannelData\Model\Channel;
+use ChannelData\Model\ChannelField;
+
+class ChannelData {
+
+	protected $directories = array();
+
+	public function __construct($data = array())
+	{
+		foreach($data as $index => $value)
+		{
+			$this->$index = $value;
+		}
+	}
+	
+	public function autoload($file)
+	{
+		if(!is_array($file))
+		{
+			$file = array($file);
+		}
+		
+		$this->directories[] = $file;
+	}
+
+	public function directories()
+	{
+		if(!is_array($this->directories))
+		{
+			$this->directories = array($this->directories);
+		}
+		
+		return $this->directories;
+	}
+}

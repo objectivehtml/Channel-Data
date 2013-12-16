@@ -2,10 +2,17 @@
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
 * @version 1.0.0-rc1
-* @build   2014-12-10
-* Copyright 2012 - All rights reserved
+* @build   2014-12-10=6
+* Copyright 2013 - All rights reserved
 * http://objectivehtml.com
 */
+
+#### 2014-12-16
+##### 1.0.0-rc2
+
+- Decoupled Channel Data into it’s own “module”.
+- Added more models and helper methods
+
 
 #### 2014-12-10
 ##### 1.0.0-rc1

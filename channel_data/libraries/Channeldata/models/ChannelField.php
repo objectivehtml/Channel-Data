@@ -42,6 +42,35 @@ class ChannelField extends BaseModel {
 		return $return;
 	}
 
+	public function name()
+	{
+		return $this->field_name;
+	}
+
+	public static function findByEntry($entry)
+	{
+		$channel = Channel::findByEntry($entry);
+
+		if(!$channel)
+		{
+			return NULL;
+		}
+
+		return ChannelField::findByGroup($channel->field_group);
+	}
+
+	public static function findByChannel($channel)
+	{
+		$channel = Channel::find($channel);
+
+		if(!$channel)
+		{
+			return NULL;
+		}
+
+		return self::findByGroup($channel->field_group);
+	}
+
 	public static function findByGroup($groupId)
 	{
 		return self::query()->where('group_id', $groupId)->result();
