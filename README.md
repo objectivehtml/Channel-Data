@@ -53,8 +53,9 @@ The key thing to note when instantiating Channel Data is that you need to do 3 t
 2. Load the Channel Data driver from the package
 3. Tell Channel Data where the auto loader should look for your files.
 
+
 	ee()->load->add_package_path(PATH_THIRD . 'your_addon_name');
-	
+
 	// Load the driver and directories at once
 
 	ee()->load->driver('ChannelData', array(
@@ -73,6 +74,7 @@ The key thing to note when instantiating Channel Data is that you need to do 3 t
 		PATH_THIRD . 'your_addon_name/models',
 		PATH_THIRD . 'your_addon_name/models/channels'
 	));
+
 
 *Note, Channel Data is a CodeIgniter driver, not a library. You must load it using the `driver` method.*
 
