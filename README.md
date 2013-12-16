@@ -60,7 +60,6 @@ The key thing to note when instantiating Channel Data is that you need to do 3 t
 	ee()->load->add_package_path(PATH_THIRD . 'your_addon_name');
 
 	// Load the driver and directories at once
-
 	ee()->load->driver('ChannelData', array(
 		'directories' => array(
 			PATH_THIRD . 'your_addon_name/models'
@@ -68,11 +67,9 @@ The key thing to note when instantiating Channel Data is that you need to do 3 t
 	));
 
 	// Or use the autoload() method to pass a directory path
-
 	ee()->channeldata->autoload(PATH_THIRD . 'your_addon_name/models');
 
 	// You can also pass an array of directories
-
 	ee()->channeldata->autoload(array(
 		PATH_THIRD . 'your_addon_name/models',
 		PATH_THIRD . 'your_addon_name/models/channels'
