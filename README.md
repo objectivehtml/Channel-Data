@@ -1,6 +1,6 @@
 # Channel Data
 
-##### Version 1.0-rc1 (2013-12-09)
+##### Version 1.0-rc2 (2013-12-16)
 
 Created By [Objective HTML](https://objectivehtml.com)
 
