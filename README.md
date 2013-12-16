@@ -49,12 +49,13 @@ Channel Data includes some core modules for you to use. Core models belong to th
 
 The key thing to note when instantiating Channel Data is that you need to do 3 things.
 
-	1. Load the Channel Data package into your add-on
-
-	2. Load the Channel Data driver from the package
-
-	3. Tell Channel Data where the auto loader should look for your files.
-
+	/**
+	 * Required Steps 
+	 *
+	 * 1. Load the Channel Data package into your add-on
+     * 2. Load the Channel Data driver from the package
+	 * 3. Tell Channel Data where the auto loader should look for your files.
+     **/
 
 	ee()->load->add_package_path(PATH_THIRD . 'your_addon_name');
 
