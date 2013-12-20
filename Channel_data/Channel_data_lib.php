@@ -706,10 +706,13 @@ if(!class_exists('Channel_data_lib'))
 		 * @param	mixed	An array or string of fields to select. Default: '*'
 		 * @return	object
 		 */
-
+		
 		public function get_channel_by_name($channel_name, $select = array('*'))
 		{
-			return $this->get_channels($select, array('channel_name' => $channel_name));
+			return $this->get_channels($select, array(
+				'site_id' => config_item('site_id')
+				'channel_name' => $channel_name
+			));
 		}
 
 		/**
