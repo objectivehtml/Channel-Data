@@ -14,18 +14,27 @@ class ChannelResponse extends QueryResponse {
 		return $this->result()->ids();
 	}
 
-	public function entries()
+	public function entries($fixedOrder = FALSE)
 	{
 		$parser = new ChannelEntriesParser();
 
 		if($this->count() == 0)
 		{
-			return ee()->entries_lib->no_results();
+			return ChannelEntriesParser::noResults();
 		}
 		
-		return $parser->entries(array(
-			'entry_id' => implode('|', $this->entryIds())
-		));
+		$ids = implode('|', $this->entryIds());
+		
+		$params = array(
+			'entry_id'    => $ids
+		);
+
+		if($fixedOrder)
+		{
+			$params['fixed_order'] = $ids;
+		}
+
+		return $parser->entries($params);
 	}
 
 	protected function _collection($data)

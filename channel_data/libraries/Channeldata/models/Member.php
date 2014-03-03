@@ -8,7 +8,7 @@ class Member extends BaseModel {
 	protected $table = 'members';
 
 	protected $idField = 'member_id';
-	
+
 	protected $fillable = array(
 		'username',
 		'screen_name',
@@ -38,7 +38,7 @@ class Member extends BaseModel {
 		$memberFields->each(function($i, $field) use($self, $data) {
 			$self->setAttribute($field->name(), $data->{$field->name()});
 		});
-		
+
 		parent::__construct($data);
 
 		if(isset($data->member_id))
@@ -92,6 +92,11 @@ class Member extends BaseModel {
 		}
 
 		return $this;
+	}
+
+	public static function findByUsername($name)
+	{
+		return self::where('username', '=', $name)->get()->first();
 	}
 
 	public static function query()

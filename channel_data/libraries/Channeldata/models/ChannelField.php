@@ -42,6 +42,11 @@ class ChannelField extends BaseModel {
 		return $return;
 	}
 
+	public function label()
+	{
+		return $this->field_label;
+	}
+
 	public function name()
 	{
 		return $this->field_name;
@@ -69,6 +74,11 @@ class ChannelField extends BaseModel {
 		}
 
 		return self::findByGroup($channel->field_group);
+	}
+
+	public static function findByName($name)
+	{
+		return self::query()->where('field_name', $name)->get()->first();
 	}
 
 	public static function findByGroup($groupId)

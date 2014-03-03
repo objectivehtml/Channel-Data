@@ -114,7 +114,7 @@ class QueryString {
 
 	public static function table($str)
 	{
-		if($str)
+		if(is_string($str))
 		{
 			$str = self::strip($str);
 
@@ -126,7 +126,7 @@ class QueryString {
 			return self::protect($str);
 		}
 
-		return $str;
+		return (string) $str;
 	}
 
 	static function strip($str)

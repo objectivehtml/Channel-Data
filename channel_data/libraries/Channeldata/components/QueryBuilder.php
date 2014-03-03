@@ -1,7 +1,5 @@
 <?php namespace ChannelData\Component;
 
-// namespace ChannelData;
-
 use ChannelData\Response\QueryResponse;
 
 class QueryBuilder {
@@ -53,6 +51,13 @@ class QueryBuilder {
 		}
 
 		throw new \Exception("{$method} is not a valid method");
+	}
+
+	public function groupBy($field)
+	{
+		$this->groupBy[] = QueryString::table($field);
+
+		return $this;
 	}
 
 	public function from($table)
@@ -107,23 +112,6 @@ class QueryBuilder {
 		return $this->join($table, $subject, $operator, $value, 'OUTER JOIN');
 	}
 
-	private function _closure($prop, $closure, $glue, $encapsulate = TRUE)
-	{
-		$builder = new QueryBuilder();
-		$method  = 'get'.ucfirst($prop);
-
-		$closure($builder);
-
-		$return = QueryString::clean(implode($glue, $builder->$method()));
-
-		if($encapsulate)
-		{
-			$return = '('.$return.')';
-		}
-
-		return $return;
-	}
-
 	public function select($select, $as = NULL, $table = FALSE)
 	{
 		if(is_array($select))
@@ -155,6 +143,211 @@ class QueryBuilder {
 		}
 
 		return $this;
+	}
+
+	public function where($subject, $operator = NULL, $value =  NULL, $concat = 'AND')
+	{
+		return $this->_conditional('where', $subject, $operator, $value, $concat);
+	}
+
+	public function whereIn($subject, $value =  NULL)
+	{
+		return $this->where($subject, QueryString::raw('IN'), $value, 'AND');
+	}
+
+	public function orWhereIn($subject, $value = NULL)
+	{
+		return $this->where($subject, QueryString::raw('IN'), $value, 'OR');
+	}
+
+	public function andWhereIn($subject, $value =  NULL)
+	{
+		return $this->where($subject, QueryString::raw('IN'), $value);
+	}
+
+	public function andWhere($subject, $operator = NULL, $value = NULL)
+	{
+		return $this->where($subject, $operator, $value);
+	}
+
+	public function orWhere($subject, $operator = NULL, $value = NULL)
+	{
+		return $this->where($subject, $operator, $value, 'OR');
+	}
+
+	public function having($subject, $operator = NULL, $value =  NULL, $concat = 'AND')
+	{
+		return $this->_conditional('having', $subject, $operator, $value, $concat);
+	}
+
+	public function havingIn($subject, $value =  NULL)
+	{
+		return $this->having($subject, QueryString::raw('IN'), $value, 'AND');
+	}
+
+	public function orHavingIn($subject, $value =  NULL)
+	{
+		return $this->having($subject, QueryString::raw('IN'), $value, 'OR');
+	}
+
+	public function andHavingIn($subject, $value =  NULL)
+	{
+		return $this->having($subject, QueryString::raw('IN'), $value);
+	}
+
+	public function andHaving($subject, $operator, $value)
+	{
+		return $this->having($subject, $operator, $value);
+	}
+
+	public function orHaving($subject, $operator, $value)
+	{
+		return $this->having($subject, $operator, $value, 'OR');
+	}
+
+	public function orderBy($field, $sort = FALSE)
+	{
+		$this->orderBy = $this->protect($field);
+
+		if($sort)
+		{
+			$this->sort($sort);
+		}
+
+		return $this;
+	}
+
+	public function sort($sort)
+	{
+		$this->sort = !is_object($sort) ? strtoupper($sort) : (string) $sort;
+
+		return $this;
+	}
+
+	public function limit($limit, $offset = FALSE)
+	{
+		$this->limit = $limit;
+
+		if($offset !== FALSE)
+		{
+			$this->offset = $offset;
+		}
+
+		return $this;
+	}
+
+	public function offset($offset)
+	{
+		$this->offset = !is_object($offset) ? $offset : (string) $sort;
+		
+		return $this;
+	}
+
+	public function table($protect)
+	{
+		return QueryString::table($protect);
+	}
+
+	public function protect($protect)
+	{
+		return QueryString::protect($protect);
+	}
+
+	public function operator($operator)
+	{
+		return QueryString::operator($operator);
+	}
+
+	public function escape($value)
+	{
+		return QueryString::escape($value);
+	}
+
+	public function get()
+	{
+		return new QueryResponse($this, $this->model);
+	}
+
+	public function count()
+	{
+		return $this->get()->count();
+	}
+
+	public function result()
+	{
+		return $this->get()->result();
+	}
+
+	public function sql()
+	{
+		$query = array();
+		
+		$select = $this->select;
+		$from = NULL;
+		$having = NULL;
+		$where  = NULL;
+		$join   = NULL;
+		$orderBy = NULL;
+		$groupBy = NULL;
+		$limit   = NULL;
+
+		if(empty($this->select))
+		{
+			$select = '*';
+		}
+		else
+		{
+			$select = implode(', ', $this->select);
+		}
+
+		if(count($this->having))
+		{
+			$having = 'HAVING '.QueryString::clean($this->having);
+		}
+
+		if(count($this->where))
+		{
+			$where = 'WHERE '.QueryString::clean($this->where);
+		}
+
+		if(count($this->join))
+		{
+			$join = QueryString::clean($this->join);
+		}
+
+		if($this->orderBy)
+		{
+			$orderBy = trim('ORDER BY '.$this->orderBy.' '.$this->sort);
+		}
+
+		if($this->groupBy)
+		{
+			$groupBy = trim('GROUP BY '.QueryString::clean($this->groupBy));
+		}
+
+		if($this->limit)
+		{
+			$limit = trim('LIMIT '.$this->offset.', '.$this->limit);
+		}
+
+		if($this->from)
+		{
+			$from = 'FROM '.implode(' ', $this->from);
+		}
+
+		$sql = trim('
+			SELECT 
+			'.$select.'
+			'.$from.'
+			'.$join.'
+			'.$where.'
+			'.$having.'
+			'.$groupBy.'
+			'.$orderBy.'
+			'.$limit.'
+		');
+
+		return $sql;
 	}
 
 	public function _conditional($type, $subject, $operator = NULL, $value =  NULL, $concat = 'AND')
@@ -222,188 +415,20 @@ class QueryBuilder {
 		return $this;
 	}
 
-	public function where($subject, $operator = NULL, $value =  NULL, $concat = 'AND')
+	private function _closure($prop, $closure, $glue, $encapsulate = TRUE)
 	{
-		return $this->_conditional('where', $subject, $operator, $value, $concat);
-	}
+		$builder = new QueryBuilder();
+		$method  = 'get'.ucfirst($prop);
 
-	public function whereIn($subject, $value =  NULL)
-	{
-		return $this->where($subject, QueryString::raw('IN'), $value, 'AND');
-	}
+		$closure($builder);
 
-	public function orWhereIn($subject, $value = NULL)
-	{
-		return $this->where($subject, QueryString::raw('IN'), $value, 'OR');
-	}
+		$return = QueryString::clean(implode($glue, $builder->$method()));
 
-	public function andWhereIn($subject, $value =  NULL)
-	{
-		return $this->where($subject, QueryString::raw('IN'), $value);
-	}
-
-	public function andWhere($subject, $operator = NULL, $value = NULL)
-	{
-		return $this->where($subject, $operator, $value);
-	}
-
-	public function orWhere($subject, $operator = NULL, $value = NULL)
-	{
-		return $this->where($subject, $operator, $value, 'OR');
-	}
-
-	public function having($subject, $operator = NULL, $value =  NULL)
-	{
-		return $this->_conditional('having', $subject, $value, 'AND');
-	}
-
-	public function havingIn($subject, $value =  NULL)
-	{
-		return $this->having($subject, QueryString::raw('IN'), $value, 'AND');
-	}
-
-	public function orHavingIn($subject, $value =  NULL)
-	{
-		return $this->having($subject, QueryString::raw('IN'), $value, 'OR');
-	}
-
-	public function andHavingIn($subject, $value =  NULL)
-	{
-		return $this->having($subject, QueryString::raw('IN'), $value);
-	}
-
-	public function andHaving($subject, $operator, $value)
-	{
-		return $this->having($subject, $operator, $value);
-	}
-
-	public function orHaving($subject, $operator, $value)
-	{
-		return $this->having($subject, $operator, $value, 'OR');
-	}
-
-	public function orderBy($field, $sort = FALSE)
-	{
-		$this->orderBy = $this->protect($field);
-
-		if($sort)
+		if($encapsulate)
 		{
-			$this->sort($sort);
-		}
-	}
-
-	public function sort($sort)
-	{
-		$this->sort = !is_object($sort) ? strtoupper($sort) : (string) $sort;
-	}
-
-	public function limit($limit, $offset = FALSE)
-	{
-		$this->limit = $limit;
-
-		if($offset !== FALSE)
-		{
-			$this->offset = $offset;
-		}
-	}
-
-	public function offset($offset)
-	{
-		$this->offset = !is_object($offset) ? $offset : (string) $sort;
-	}
-
-	public function table($protect)
-	{
-		return QueryString::table($protect);
-	}
-
-	public function protect($protect)
-	{
-		return QueryString::protect($protect);
-	}
-
-	public function operator($operator)
-	{
-		return QueryString::operator($operator);
-	}
-
-	public function escape($value)
-	{
-		return QueryString::escape($value);
-	}
-
-	public function get()
-	{
-		return new QueryResponse($this, $this->model);
-	}
-
-	public function result()
-	{
-		return $this->get()->result();
-	}
-
-	public function sql()
-	{
-		$query = array();
-		
-		$select = $this->select;
-		$from = NULL;
-		$having = NULL;
-		$where  = NULL;
-		$join   = NULL;
-		$orderBy = NULL;
-		$limit   = NULL;
-
-		if(empty($this->select))
-		{
-			$select = '*';
-		}
-		else
-		{
-			$select = implode(', ', $this->select);
+			$return = '('.$return.')';
 		}
 
-		if(count($this->having))
-		{
-			$having = 'HAVING '.QueryString::clean($this->having);
-		}
-
-		if(count($this->where))
-		{
-			$where = 'WHERE '.QueryString::clean($this->where);
-		}
-
-		if(count($this->join))
-		{
-			$join = QueryString::clean($this->join);
-		}
-
-		if($this->orderBy)
-		{
-			$orderBy = trim('ORDER BY '.$this->orderBy.' '.$this->sort);
-		}
-
-		if($this->limit)
-		{
-			$limit = trim('LIMIT '.$this->offset.', '.$this->limit);
-		}
-
-		if($this->from)
-		{
-			$from = 'FROM '.implode(' ', $this->from);
-		}
-
-		$sql = trim('
-			SELECT 
-			'.$select.'
-			'.$from.'
-			'.$join.'
-			'.$where.'
-			'.$having.'
-			'.$orderBy.'
-			'.$limit.'
-		');
-
-		return $sql;
+		return $return;
 	}
 }

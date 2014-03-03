@@ -2,9 +2,11 @@
 
 use ChannelData\Base\BaseModel;
 use ChannelData\Model\Channel;
+use ChannelData\Model\ChannelField;
 use ChannelData\Component\ChannelQueryBuilder;
 use ChannelData\Component\QueryString;
 use ChannelData\Component\ChannelEntriesApi;
+use ChannelData\Component\ChannelEntriesParser;
 
 // namespace ChannelData;
 
@@ -65,7 +67,7 @@ class ChannelModel extends BaseModel {
 	public function __construct($data = array())
 	{
 		ee()->lang->loadfile('content');
-		
+
 		$this->uidField   = $this->prefix.'uid';
 		$this->required[] = $this->prefix.'uid';
 
@@ -111,6 +113,11 @@ class ChannelModel extends BaseModel {
 
 	public function channel()
 	{
+		if(!$this->channel)
+		{
+			return FALSE;
+		}
+
 		$channel = Channel::findByName($this->channel);
 
 		if(!$channel)
@@ -137,7 +144,7 @@ class ChannelModel extends BaseModel {
 	}
 
 	protected function _createRecord($data = array())
-	{		
+	{
 		if(count($data))
 		{
 			$this->fill($data);
@@ -150,6 +157,10 @@ class ChannelModel extends BaseModel {
 		{
 			$this->errors = $this->apiResponse;
 		}
+		else
+		{
+			$this->exists = TRUE;
+		}
 
 		return $this;
 	}
@@ -160,9 +171,9 @@ class ChannelModel extends BaseModel {
 		{
 			$this->fill($data);
 		}
-		
+
 		$this->apiResponse = ChannelEntriesApi::update_entry($this->channel_id, $this->entry_id, $this->data());
-		
+
 		if(!is_int($this->apiResponse))
 		{
 			$this->errors = $this->apiResponse;
@@ -182,10 +193,14 @@ class ChannelModel extends BaseModel {
 			if(isset($data[$row->field_name]) && $value = $data[$row->field_name])
 			{
 				unset($data[$row->field_name]);
-
-				$data['field_id_'.$row->field_id] = $value;
-				$data['field_ft_'.$row->field_id] = $row->field_fmt;
 			}
+			else
+			{
+				$value = NULL;
+			}
+
+			$data['field_id_'.$row->field_id] = $value;
+			$data['field_ft_'.$row->field_id] = $row->field_fmt;
 		}
 
 		return $data;
@@ -206,12 +221,30 @@ class ChannelModel extends BaseModel {
 			return $this->fields;
 		}
 
-		foreach($this->channel()->fields()->items() as $field)
+		if($channel = $this->channel())
 		{
-			$this->fields[$field->field_id] = $field->field_name;
+			foreach($channel->fields()->items() as $field)
+			{
+				$this->fields[$field->field_id] = $field->field_name;
+			}
+		}
+		else
+		{
+			foreach(ChannelField::all()->items() as $field)
+			{
+				$this->fields[$field->field_id] = $field->field_name;
+			}
 		}
 
 		return $this->fields;
+	}
+
+	public static function findOpen($entry_id)
+	{
+		return self::where('channel_data.entry_id', '=', $entry_id)
+				   ->where('status', '=', 'open')
+				   ->get()
+				   ->first();
 	}
 
 	public static function findByAuthorId($author_id)
@@ -233,6 +266,11 @@ class ChannelModel extends BaseModel {
 	{
 		$class = new static;
 
+		if(!$class->channel)
+		{
+			return FALSE;
+		}
+
 		return Channel::findByName($class->channel)->id();
 	}
 
@@ -250,28 +288,27 @@ class ChannelModel extends BaseModel {
 
 		$query->from('channel_titles');
 		$query->leftJoin('channel_data', 'channel_titles.entry_id', '=', 'channel_data.entry_id');
-		$query->select(array(
-			'entry_id',
-			'site_id',
-			'channel_id',
-			'author_id',
-			'title',
-			'url_title',
-			'status',
-			'entry_date',
-			'expiration_date',
-		), NULL, 'channel_titles');
+		$query->select('*', NULL, 'channel_titles');
 
 		foreach($class->fields() as $field_id => $field_name)
 		{
 			$query->select('field_id_'.$field_id, $field_name, 'channel_data');
 		}
 
-		if($class->channelId()) 
+		if($class->channelId())
 		{
 			$query->where('channel_data.channel_id', '=', $class->channelId());
 		}
 
 		return $query;
+	}
+
+	public function entries()
+	{
+		$parser = new ChannelEntriesParser();
+
+		return $parser->entries(array(
+			'entry_id'    => $this->id()
+		));
 	}
 }

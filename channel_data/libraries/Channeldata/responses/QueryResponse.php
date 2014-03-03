@@ -66,9 +66,19 @@ class QueryResponse {
 		return $this->_collection($this->query->result());
 	}
 
+	public function get()
+	{
+		return $this->_collection($this->query->result());
+	}
+
 	public function row()
 	{
 		return $this->_model($this->query->row());
+	}
+
+	public function toArray()
+	{
+		return $this->_model($this->query->row())->toArray();
 	}
 
 	protected function _model($data)

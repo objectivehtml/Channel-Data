@@ -1,20 +1,38 @@
 /**
 * Channel Data
 * Author: Justin Kimbrell (Objective HTML)
-* @version 1.0.0-rc1
-* @build   2014-12-10=6
+* @version 1.0.0-rc3
+* @build   2014-03-03
 * Copyright 2013 - All rights reserved
 * http://objectivehtml.com
 */
 
-#### 2014-12-16
+#### 2014-03-03
+##### 1.0.0-rc3
+
+- Added get() method to QueryResponse
+- Added toArray() method to QueryResponse
+- Added fixedOrder parameter to entries() method in Channel Response
+- Added findByUsername() to Member
+- Added label() method to ChannelField
+- Added findByName() method to ChannelField
+- Added findByName() method to ChannelField
+- Added groupBy() method to QueryBuilder
+- Added prefix() method to ChannelData
+- Added entries() method to ChannelModel
+- Added new ChannelEntriesParser class
+- Bug fixes in QueryString class
+- Bug fixes in QueryBuilder class
+- Bug fixes in ChannelEntriesApi class
+
+#### 2013-12-16
 ##### 1.0.0-rc2
 
 - Decoupled Channel Data into it’s own “module”.
 - Added more models and helper methods
 
 
-#### 2014-12-10
+#### 2013-12-10
 ##### 1.0.0-rc1
 
 - Complete rewrite of entire API. All new docs and syntax based on Eloquent.

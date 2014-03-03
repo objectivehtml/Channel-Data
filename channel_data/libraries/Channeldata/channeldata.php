@@ -104,4 +104,45 @@ class ChannelData {
 		
 		return $this->directories;
 	}
+
+	public static function prefix($prefix, $data, $delimeter = ':')
+	 {
+	 	$new_data = array();
+	 	
+	 	if(!empty($prefix))
+	 	{
+		 	foreach($data as $data_index => $data_value)
+		 	{
+		 		if(is_array($data_value) && preg_match('/\d/', $data_index))
+		 		{
+		 			if(isset($data_value[0]) && !is_array($data_value[0]))
+		 			{
+			 			$new_row = array();
+			 			
+			 			foreach($data_value as $inner_index => $inner_value)
+			 			{
+			 				$new_row[$prefix . $delimeter . $inner_index] = $inner_value;
+			 			}
+			 			
+			 			$new_data[$data_index] = $new_row;
+		 			}
+		 			else
+		 			{
+		 				$new_data[$data_index] = self::prefix($prefix, $data_value, $delimeter);
+		 			}
+		 			
+		 		}
+		 		else
+		 		{
+		 			$new_data[$prefix . $delimeter . $data_index] = $data_value;
+		 		}
+		 	}
+	 	}
+	 	else
+	 	{
+	 		$new_data = $data;
+	 	}
+	 	
+	 	return $new_data;	
+	 }
 }

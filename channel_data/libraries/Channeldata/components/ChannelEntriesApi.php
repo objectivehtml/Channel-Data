@@ -43,12 +43,15 @@ class ChannelEntriesApi {
 	{
 		ee()->load->library('api');
 		ee()->api->instantiate('channel_entries');
+		ee()->api->instantiate('channel_fields');
 		
 		$data['entry_id']   = $entry_id;
 		$data['channel_id'] = $channel_id;
 
 		ee()->session->userdata['group_id'] = 1;
 
+		ee()->api_channel_fields->setup_entry_settings($channel_id, $data);
+		
 		ee()->api_channel_entries->update_entry($entry_id, $data);
 		
 		if(count(ee()->api_channel_entries->errors) > 0)
