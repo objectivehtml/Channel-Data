@@ -281,7 +281,8 @@ class Channel_data_tmpl extends Channel_data_lib {
 						
 						$dkey = $matches[0][$j];
 						$val  = $matches[1][$j];
-						$custom_date_fields[$matches[0][$j]] = $this->EE->localize->fetch_date_params($matches[1][$j]);
+
+						$custom_date_fields[$matches[0][$j]] = $this->_fetch_date_params($matches[1][$j]);
 					}
 					
 					
@@ -298,8 +299,15 @@ class Channel_data_tmpl extends Channel_data_lib {
 							$localize = FALSE;
 						}
 					
-						$val = str_replace($custom_date_fields[$dkey], $this->EE->localize->convert_timestamp($custom_date_fields[$dkey], $temp_val, $localize), $val);
-	
+						if(method_exists($this->EE->localize, 'format_date'))
+						{
+							$val = $this->EE->localize->format_date($matches[1][0], $temp_val, $localize);
+						}
+						else
+						{	
+							$val = $this->EE->localize->convert_timestamp($matches[1][0], $temp_val, $localize);
+						}
+
 						$tagdata = $this->EE->TMPL->swap_var_single($dkey, $val, $tagdata);
 					}		
 				}
@@ -557,5 +565,16 @@ class Channel_data_tmpl extends Channel_data_lib {
 		$this->EE->channel_data->tmpl->reset($TMPL);
 			
 		return $return;
+	}
+
+	private function _fetch_date_params($datestr = '')
+	{
+		if ($datestr == '')
+			return;
+
+		if ( ! preg_match_all("/(%\S)/", $datestr, $matches))
+				return;
+
+		return $matches[1];
 	}
 }

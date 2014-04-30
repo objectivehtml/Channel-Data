@@ -710,7 +710,7 @@ if(!class_exists('Channel_data_lib'))
 		public function get_channel_by_name($channel_name, $select = array('*'))
 		{
 			return $this->get_channels($select, array(
-				'site_id' => config_item('site_id')
+				'site_id' => config_item('site_id'),
 				'channel_name' => $channel_name
 			));
 		}
