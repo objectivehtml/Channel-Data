@@ -1228,7 +1228,7 @@ if(!class_exists('Channel_data_lib'))
 		 * @return	object
 		 */
 
-		public function get_members($select = array('members.member_id', 'members.group_id', 'members.email', 'members.username', 'members.screen_name'), $where = array(), $order_by = 'member_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
+		public function get_members($select = array('members.member_id', 'members.group_id', 'members.email', 'members.username', 'members.screen_name'), $where = array(), $order_by = 'members.member_id', $sort = 'DESC', $limit = FALSE, $offset = 0)
 		{
 
 			$fields 		= $this->get_member_fields()->result();
